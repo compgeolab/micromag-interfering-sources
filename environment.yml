@@ -1,4 +1,4 @@
-name: REPLACE_WITH_REPO_NAME
+name: micromag-interfering-sources
 channels:
   - conda-forge
   - defaults
