@@ -372,6 +372,16 @@ def detect_anomalies(
     ).T
     blob_coords = (data.x.values[ix.astype("int")], data.y.values[iy.astype("int")])
     blob_sizes = sigma_pix * np.sqrt(2) * spacing * size_increment
+    
+## Experimentamos ordenar pelo tamanho das janelas, porém não deu muito certo!
+#    order_vector = np.argsort(blob_sizes)[::-1]
+    
+#    windows = [
+#        [blob_coords[0][i] - blob_sizes[i], blob_coords[0][i] + blob_sizes[i], 
+#         blob_coords[1][i] - blob_sizes[i], blob_coords[1][i] + blob_sizes[i]]
+#        for i in order_vector
+#    ]
+    
     windows = [
         [x - size, x + size, y - size, y + size]
         for size, x, y in zip(blob_sizes, *blob_coords)
