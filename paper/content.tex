@@ -42,8 +42,7 @@ The proposed methodology aims to enhance the accuracy of window-based inversion 
     \end{equation}
         
     \noindent{
-   % This optimization approach was employed to refine these position and magnetic moment, enhancing the accuracy of the inversion results. 
-   % This optimization was performed using Scipy optimization Nelder-Mead technique \citep{2020SciPy-NMeth, Nelder-Mead1965}, which takes the six parameters obtained in the previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}) and minimizes the misfit function given by:
+
    The position and magnetic moment might still be refined to improve the inversion results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth, Nelder-Mead1965}, which employs the six parameters obtained in previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
     \begin{equation}
     \label{misfit_equation}
@@ -81,31 +80,8 @@ We analyze how the method works by simulating a complex scenario containing 103 
 The inversion for this synthetic data was solved using both the standard method \citep{Souza-Junior2023b} and the proposed interfering sources methodologies. A summary of the comparison between the classic Euler method and the iterative approach revealed noteworthy results in the context of the analysis of the provided synthetic data. Upon applying the iterative Euler deconvolution method, a significant enhancement in the precision of the magnetic source position is observed when compared to the Euler deconvolution in the standard method. Figure~\ref{euler1}a illustrates the detected sources, showcasing the algorithm's effectiveness in identifying regions of interest. Figures ~\ref{euler1}b and ~\ref{euler1}c show the results obtained by the standard and iterative Euler methods, respectively. It becomes evident that the iterative method yields more accurate and refined estimates. This increase in accuracy is crucial, especially in scenarios where stronger magnetic sources can distort the magnetic field anomaly of weaker sources. Although this new methodology can markedly increase the accuracy in the estimated position for virtually all sources, the biggest errors are still related to clustered sources.
 %However, it is important to note that the enhanced precision with the iterative method comes at the cost of increased computational time, presenting a trade-off between superior results and computational efficiency.
 
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=1\linewidth]{figures/euler-comparion-1.png}
-  \caption{
-    % Addressing computational challenges in magnetic microscopy with extensive datasets.
-    % a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
-    % b) Streamlining data through pre-selected windows reduces the dataset size for inversion, ensuring efficiency without compromising final results.
-      }
-  \label{euler1}
-\end{figure}
 
 These iterative Euler estimated positions were used for the magnetic inversion due to their better results except for the standard method results, which were kept unchanged from the results presented by \citet{Souza-Junior2023b}. Figure~\ref{inversion1} summarizes the comparison concerning the angular misfit, the magnetic moment misfit, and the r-squared score, respectively, for the standard (Figures~\ref{inversion1}a-c), iterative (Figures~\ref{inversion1}d-f) interfering sources using $b_z$ (Figures~\ref{inversion1}g-i), and interfering sources using the vertical derivative (Figures~\ref{inversion1}j-l). Overall, as predicted, every single interfering source method outperformed the standard one in all three of the measured parameters. It is worth mentioning that the iterative (Figures~\ref{inversion1}d) and the $b_{zz}$ interfering sources (Figures~\ref{inversion1}j) yield the best results for the angular misfit, with barely any difference, and also for the r-squared score. Nevertheless, the $b_{z}$ interfering sources technique shows slightly better results for the magnetic moment misfit. Although displaying better results than the standard method, none of the proposed methodologies are capable of dealing with tightly clustered sources, especially for the magnetic moment misfit. This observation might have its cause inherited rooted in the limitations of the Euler deconvolution, even after all the improvement of the iterative Euler deconvolution (Figures~\ref{euler1}c), which triggers the ambiguity between the source's depth with its magnetic intensity. This example shows that all proposed methodologies can be applied to magnetic microscopy yielding better results than the standard method.
-
-
-
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=1\linewidth]{figures/inversion-comparion-1.png}
-  \caption{
-    % Addressing computational challenges in magnetic microscopy with extensive datasets.
-    % a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
-    % b) Streamlining data through pre-selected windows reduces the dataset size for inversion, ensuring efficiency without compromising final results.
-      }
-  \label{inversion1}
-\end{figure}
 
 
 \subsection{Shifted magnetic field acquisition}
@@ -142,6 +118,27 @@ Figure~\ref{inversion2} succinctly presents a comprehensive comparison encompass
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Real data application}
 
+\begin{figure}[tb!]
+  \centering
+  \includegraphics[width=1\linewidth]{paper/figures/euler-comparion-real.png}
+  \caption{
+    % Addressing computational challenges in magnetic microscopy with extensive datasets.
+    % a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
+    % b) Streamlining data through pre-selected windows reduces the dataset size for inversion, ensuring efficiency without compromising final results.
+      }
+  \label{real-data-euler}
+\end{figure}
+
+\begin{figure}[tb!]
+  \centering
+  \includegraphics[width=1\linewidth]{paper/figures/real-data-stereograms.png}
+  \caption{
+    % Addressing computational challenges in magnetic microscopy with extensive datasets.
+    % a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
+    % b) Streamlining data through pre-selected windows reduces the dataset size for inversion, ensuring efficiency without compromising final results.
+      }
+  \label{real-data-stereograms}
+\end{figure}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussions}
 
