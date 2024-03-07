@@ -1,257 +1,70 @@
 \section{Introduction}
 
+The methodology proposed by \citet{Souza-Junior2023b} aims to achieve the semi-automatic estimation of dipole moments for individual grains, this is approached through a three-part methodology:
 
+\begin{enumerate}
+    \item \textbf{Data preprocessing:} Apply classic potential field data processing techniques, including the total gradient amplitude map (TGA). Employ image processing methods, such as histogram stretching, and an edge detection algorithm to identify and spatially isolate the magnetic field of each source into window data.
+
+    \item \textbf{3D position estimation:} Estimate the 3D position of magnetic particles by applying the Euler deconvolution method to the data segment identified in the first step.
+
+    \item \textbf{Magnetic moment inversion:} Execute the magnetic moment inversion in the data segment to determine the 3-component dipole moment vector. Which assumes a dipole model located in the position estimated with the Euler equation. 
+\end{enumerate}
+
+Performing the inversion separately for each data segment enhances computational efficiency, ensuring a quick solution to the linear inverse problem. However, it is important to acknowledge that stronger magnetic sources may influence the estimated positions and magnetic moment of nearby weaker ones. This understanding is crucial for refining the estimation process and ensuring robust results in magnetic parameter estimation.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Methodology}
 
-The methodology proposed by \citet{Souza-Junior2023b} aimed to achieve the semi-automatic estimation of dipole moments for individual grains per image. This is approached through a three-part methodology. The initial step involves the application of classic potential field data processing, such as total gradient amplitude, coupled with image processing techniques like histogram stretching, equalization, and an edge detection algorithm. This enables the identification and spatial isolation of the magnetic field caused by each source. 
+% The methodology proposed by \citet{Souza-Junior2023b} aimed to achieve the semi-automatic estimation of dipole moments for individual grains per image. This is approached through a three-part methodology. The initial step involves the application of classic potential field data processing, such as total gradient amplitude, coupled with image processing techniques like histogram stretching, equalization, and an edge detection algorithm. This enables the identification and spatial isolation of the magnetic field caused by each source. 
 
-Following that, attention shifts to the estimation of the 3D position of magnetic particles based on magnetic field measurements. This is carried out by applying the Euler deconvolution method to the data segment identified in the first step. In the final phase, the magnetic moment inversion process is executed. This entails estimating the 3-component dipole moment vector by inverting the magnetic field data assuming a dipolar model. The inversion is conducted separately for each data segment identified initially, which in theory ensures stability and computational efficiency in solving the linear inverse problem in a few seconds. 
+% Following that, attention shifts to the estimation of the 3D position of magnetic particles based on magnetic field measurements. This is carried out by applying the Euler deconvolution method to the data segment identified in the first step. In the final phase, the magnetic moment inversion process is executed. This entails estimating the 3-component dipole moment vector by inverting the magnetic field data assuming a dipolar model. The inversion is conducted separately for each data segment identified initially, which in theory ensures stability and computational efficiency in solving the linear inverse problem in a few seconds. 
 
-However, estimating the source's position based on Euler deconvolution revealed that stronger magnetic sources may influence the estimated positions of nearby weaker ones. Therefore, it becomes imperative to consider the interplay among the sources to estimate their magnetic parameters and position accurately. Understanding how these magnetic sources interact with each other is crucial for refining our estimation process and ensuring robust results in magnetic parameter estimation.
+% However, estimating the source's position based on Euler deconvolution revealed that stronger magnetic sources may influence the estimated positions of nearby weaker ones. Therefore, it becomes imperative to consider the interplay among the sources to estimate their magnetic parameters and position accurately. Understanding how these magnetic sources interact with each other is crucial for refining our estimation process and ensuring robust results in magnetic parameter estimation.
+
+This study explores a new methodology to effectively manage interfering sources during the inversion process. Which is designed to mitigate the magnetic sources' interference and enhance the precision of the inversion analyses proposed by \citet{Souza-Junior2023b}.
 
 \subsection{Magnetic inversion: interfering sources}
 
+% \subsubsection{Iterative Euler deconvolution}
 
-This study explores methodologies to effectively manage interfering sources during the inversion process. In the following sections, three distinct methodologies are presented, each designed to mitigate the magnetic sources' interference and enhance the precision of the inversion analyses proposed by \citet{Souza-Junior2023b}.
-
-
-\subsubsection{Iterative Euler deconvolution}
-
-The first proposed methodology aims to enhance the accuracy of inversion analyses in magnetic data, particularly in scenarios where stronger magnetic sources may distort the results. The process is divided into distinct steps:
+The proposed methodology aims to enhance the accuracy of window-based inversion analyses in magnetic data, particularly in scenarios where stronger magnetic sources could introduce distortions in the results. As mentioned earlier, the edge detection algorithm is applied to the TGA map to segment the data windows of the magnetic sources, which follow the descending order of blob magnitude. The latter is directly proportional to the magnetic signal of the sources, hence it might be used in the process to account for the effect of stronger sources. This process is divided into distinct steps:
 
 \begin{enumerate}
-  \item \textbf{Automatic Source Detection:} Utilizing edge detection on the total gradient amplitude (TGA), the algorithm identified and segmented window data of the magnetic sources in descending order of magnitude (blob intensity). 
-
-  \item \textbf{Position Estimation:} Subsequently, the Euler deconvolution was applied in the window data to obtain a 3D position estimation.
-  
-  \item \textbf{Calculation of Theoretical Magnetic Signals:} The theoretical magnetic signal associated with the identified source was computed using a dipole forward model with the aid of Choclo python library \citep{choclo2022}. This yielded a theoretical representation of the expected magnetic effects from each source.
-  
-  \item \textbf{Signal Removal:} The magnetic signal from the strong source, computed in the previous step, is selectively removed from the dataset. This leads to a dataset that is devoid of the strong source's dominant influence, allowing for a gradual isolation of the contributions from weaker sources. The directional derivatives were also recalculated to re-calibrate the next Euler deconvolution within this updated dataset.
+    \item \textbf{Position estimation:} The Euler deconvolution is applied in the window data to obtain a 3D position estimation $(x_c, y_c, z_c)$, assuming that the anomaly is caused by a point/dipolar source.
     
-  % The magnetic signal attributed to the strong source, calculated in the previous step, is selectively removed from the dataset. Resulting in a dataset, now devoid of the dominant effect of the strong source, that progressively isolates the contributions of weaker sources. In the updated dataset, we also recalculate all directional derivatives required in the Euler deconvolution.
+    \item \textbf{Magnetic moment inversion:} The dipole moment vector $(m_x, m_y, m_z)$ that best fits a set of $N$ observations of the vertical component of the magnetic field $\mathbf{b_z}^{obs}$ is obtained by a least-squares estimator. The latter also assumes a dipolar source located in the position obtained with the Euler deconvolution.
+    
+    \item \textbf{Simplex optimization:} After obtaining the initial estimates of the 3D position $(x_c, y_c, z_c)$ and the dipole moment vector $(m_x, m_y, m_z)$, the forward model of the dipole's vertical component anomaly (${b_z}^{dip}$) can be obtained with:
+    
+    \begin{equation}
+        \label{bz_dipole_equation}
+        {b_z}^{dip} = 3 \frac{m_x (x-x_c) + m_y (y-y_c) + m_z (z-z_c)}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^5} - \frac{m_z}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^3} .
+    \end{equation}
+        
+    \noindent{
+   % This optimization approach was employed to refine these position and magnetic moment, enhancing the accuracy of the inversion results. 
+   % This optimization was performed using Scipy optimization Nelder-Mead technique \citep{2020SciPy-NMeth, Nelder-Mead1965}, which takes the six parameters obtained in the previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}) and minimizes the misfit function given by:
+   The position and magnetic moment might still be refined to improve the inversion results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth, Nelder-Mead1965}, which employs the six parameters obtained in previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
+    \begin{equation}
+    \label{misfit_equation}
+    \mathbf{\Phi} (x_c, y_z, z_c, m_x, m_y, m_z) = \| \mathbf{b_z}^{obs} - \mathbf{b_z}^{dip} \|^2.
+    \end{equation} 
+    
+     The Nelder-Mead method, a gradient-free optimization technique, systematically searches the optimal solution of the Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space. This is particularly useful for optimizing functions where gradients are difficult to compute or not available. However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and has been addressed by normalizing the magnetic moment vector using the initial guess dipole magnitude and the position vector with respect to the initial position estimates. This normalization process is implemented to ensure that each parameter falls within a unitary range, effectively addressing the significant disparity of up to seven orders of magnitude between the position and magnetic moment.
+     }
+    
+    \item \textbf{Calculation of theoretical magnetic signals:} The theoretical magnetic signal associated with the identified source was computed using a dipole forward model (Equation~\ref{bz_dipole_equation}), with the aid of Choclo python library \citep{choclo2022}, and the refined parameter vector. This yielded a theoretical representation of the expected magnetic effects for the source.
+    
+    \item \textbf{Signal removal:} The theoretical magnetic signal from the strong source was selectively removed from the dataset. This leads to a dataset that is devoid of the (currently) stronger source influence, allowing for a gradual isolation of the contributions from weaker sources. The directional derivatives were also recalculated to re-calibrate the next Euler deconvolution within this updated dataset.
+ 
 \end{enumerate}
 
-This step-by-step procedure is subsequently employed for all detected particles in the sample, leading to an improved position estimation compared to the previous analyses. Designed to mitigate the impact of stronger sources and with a better estimation of positions, this method significantly enhances the precision of subsequent inversion analyses. However, a trade-off between achieving better results and incurring longer computational runtime is unavoidable. 
+This step-by-step procedure is subsequently employed for all detected particles in the sample, leading to an improved position estimation compared to the original methodology. This new proposed method, designed to mitigate the impact of stronger sources and with a better estimation of positions, significantly enhances the precision of subsequent inversion analyses. However, a trade-off between achieving better results and incurring longer computational runtime is unavoidable. 
 
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Vertical component magnetic field ($\mathbf{b_z}$)}\label{section_bz}
-After identifying the position of the source, assuming it is a dipole, we can utilize the modified approach from \citet{Oliveira2015Estimation} to calculate the dipole moment vector, denoted as 
-\textbf{m}. The magnetic induction vector $\mathbf{b_z}$ for a dipole is given by
-
-\begin{equation}
-\label{eq_dipole_bz}
-\mathbf{b_z}
-= \dfrac{\mu_0}{4\pi}
-\begin{bmatrix}
-\dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r}
-& \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r}
-& \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r}
-\end{bmatrix}
-\begin{bmatrix}
-m_x \\ m_y \\ m_z
-\end{bmatrix}
-= \dfrac{\mu_0}{4\pi} \mathbf{M_z}\,\mathbf{m}
-\ .
-\end{equation}
-
-To address the mutual interference of magnetic sources, a method involves simultaneously solving the magnetic moment inversion for all "L" identified, therefore the Equation \ref{eq_dipole_bz} becomes
-
-
-\begin{equation}
-% \footnotesize
-\label{eq_dipole_bz_all}
-\dfrac{\mu_0}{4\pi}
-{\begin{bmatrix}
-\dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_{1,1}}
-& \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_{1,1}}
-& \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_{1,1}}
-& \hdots
-& \dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_{1,L}}
-& \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_{1,L}}
-& \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_{1,L}} \\
-\\
-
-& 
-& 
-& \vdots
-& 
-& 
-&  \\
-\\
-\dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_{N,1}}
-& \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_{N,1}}
-& \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_{N,1}}
-& \hdots
-& \dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_{N,L}}
-& \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_{N,L}}
-& \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_{N,L}} \\
-\end{bmatrix}}_{N \times 3L}
-{\begin{bmatrix}
-{m_x}_1 \\ {m_y}_1 \\ {m_z}_1 \\ \vdots \\{m_x}_L \\ {m_y}_L \\ {m_z}_L \\
-\end{bmatrix}}_{3L \times 1}
-=
-{\begin{bmatrix}
-{b_z}_1 \\ {b_z}_2 \\ {b_z}_3 \\ \vdots \\{b_z}_N 
-\end{bmatrix}}_{N \times 1}.
-\end{equation} \bigskip
-
-In which $r_{i,j} = \sqrt{(x_i - {x_c}_j)^2 + (y_i - {y_c}_j)^2 + (z_i - {z_c}_j)^2}$ is the Cartesian distance between the i-th, $i=1, 2, \hdots N$, observation point $b_z (x_i, y_i, z_i)$ and the j-th, $j=1, 2, \hdots L$, point source $({x_c}_j, {y_c}_j, {z_c}_j)$ and $\mu_0$ is the vacuum magnetic permeability. While the three second-order derivatives in Equation~\ref{eq_dipole_bz_all} are:
-
-\begin{equation}
-% \footnotesize
-\begin{aligned}
-\dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_{i,j}} &=
-\dfrac{3(z_i - {z_c}_j)(x_i - {x_c}_j)}{{r_{i,j}}^5}\ ,
-\\
-\dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_{i,j}} &=
-\dfrac{3(z_i - {z_c}_j)(y_i - {y_c}_j)}{{r_{i,j}}^5}\ ,
-\\
-\dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_{i,j}} &=
-\dfrac{3(z_i - {z_c}_j)^2}{{r_{i,j}}^5} - \dfrac{1}{{r_{i,j}}^3}\ .
-\end{aligned}
-\end{equation}   \bigskip
-
-The Equation \ref{eq_dipole_bz_all} can be expressed in matrix form as
-
-\begin{equation}
-\label{qdhqM4s9Ln}
-\mathbf{M_z} \mathbf{m} = \mathbf{b_z}^{pred} \ .
-\end{equation}
-
-The dipole moment vector that best fits
-a set of $N$ observations of the vertical component of the magnetic field
-$\mathbf{b_z}^{obs}$ is given by minimizing the misfit function using a least-squares estimator
-
-\begin{equation}
-\label{uV9pRVYO4l}
-\Phi (\mathbf{m}) = \| \mathbf{b_z}^{obs} - \mathbf{b_z}^{pred} \|^2 = (\mathbf{b_z}^{obs} - \mathbf{M_z}\mathbf{m})^T  (\mathbf{b_z}^{obs} - \mathbf{M_z}\mathbf{m})\ .
-\end{equation}
-
-The dipole moment vector that minimizes $\Phi (\mathbf{m})$ can be found by solving the linear equation system
-
-\begin{equation}
- \mathbf{m} = {\left ( \mathbf{M_z}^T \mathbf{M_z} \right )}^{-1} \mathbf{M_z}^T\mathbf{b_z}^{obs}\ .
-\end{equation}
-
-Therefore, taking into account all their mutual signal interference in the N observed data increases further the trade-off between accuracy and run time.
-
-
-
-\subsubsection{Vertical derivative of $\mathbf{b_z}$}
-
-%An alternative method to enhance the inversion process involves utilizing the first derivative of \( b_z \). 
-
-Applying derivatives in geophysical investigations offers improved sensitivity to shallow sources, enabling the isolation and detailed analysis of local geological features. The flexibility and versatility inherent in fractional order derivatives allow for precise adjustments in the separation process, enabling accurate estimation of the local field, such as shown by \citet{Florio2022}. In the latter, the vertical derivative serves as a straightforward and stable tool for regional-residual separation, even in regions with restricted spatial extent. This contributes to the precise prediction and isolation of local field characteristics. 
-
-We obtained the partial derivative ($\partial_z f$) of the magnetic field ($f$) concerning $z$ using a second-order accurate central finite-difference scheme based on two upward continuation applications
-
-\begin{equation}
-\partial_z f(x, y, z) \approx
-\dfrac{f(x + \Delta z, y, z) - f(x - \Delta z, y, z)}{2 \Delta z}
-\ .
-\end{equation}
-
-This derivative functions as a high-pass filter, effectively reducing the potential interference caused by the long-wavelength signal of the stronger source with weaker sources. We can obtain \( \frac{b_z}{\partial z} \) by differentiating both sides of Equation~\ref{eq_dipole_bz_all} with respect to \( z \):
-
-
-
-\begin{equation}
-\footnotesize
-\label{eq_dipole_bz_z_deriv}
-\dfrac{\mu_0}{4\pi}
-% \scriptsize
-{\begin{bmatrix}
-\dfrac{\partial^2}{\partial z \partial x \partial z} \dfrac{1}{r_{1,1}}
-& \dfrac{\partial^2}{\partial z \partial y \partial z} \dfrac{1}{r_{1,1}}
-& \dfrac{\partial^2}{\partial z \partial z \partial z} \dfrac{1}{r_{1,1}}
-& \hdots
-& \dfrac{\partial^2}{\partial z \partial x \partial z} \dfrac{1}{r_{1,L}}
-& \dfrac{\partial^2}{\partial z \partial y \partial z} \dfrac{1}{r_{1,L}}
-& \dfrac{\partial^2}{\partial z \partial z \partial z} \dfrac{1}{r_{1,L}} \\
-\\
-
-& 
-& 
-& \vdots
-& 
-& 
-&  \\
-\\
-\dfrac{\partial^2}{\partial z \partial x \partial z} \dfrac{1}{r_{N,1}}
-& \dfrac{\partial^2}{\partial z \partial y \partial z} \dfrac{1}{r_{N,1}}
-& \dfrac{\partial^2}{\partial z \partial z \partial z} \dfrac{1}{r_{N,1}}
-& \hdots
-& \dfrac{\partial^2}{\partial z \partial x \partial z} \dfrac{1}{r_{N,L}}
-& \dfrac{\partial^2}{\partial z \partial y \partial z} \dfrac{1}{r_{N,L}}
-& \dfrac{\partial^2}{\partial z \partial z \partial z} \dfrac{1}{r_{N,L}} \\
-\end{bmatrix}}_{N \times 3L}
-{\begin{bmatrix}
-{m_x}_1 \\ {m_y}_1 \\ {m_z}_1 \\ \vdots \\{m_x}_L \\ {m_y}_L \\ {m_z}_L \\
-\end{bmatrix}}_{3L \times 1}
-=
-{\begin{bmatrix}
-\frac{{b_z}_1}{ \partial z} \\ \frac{{b_z}_2}{ \partial z} \\ \frac{{b_z}_3}{ \partial z} \\ \vdots \\\frac{{b_z}_N}{ \partial z}
-\end{bmatrix}}_{N \times 1}.
-\end{equation} \bigskip
-
-In Equation~\ref{eq_dipole_bz_z_deriv}, the three third-order derivatives are given by:
-
-\begin{equation}
-% \footnotesize
-\begin{aligned}
-\dfrac{\partial^2}{\partial z \partial x \partial z} \dfrac{1}{r_{i,j}} &=
-\dfrac{3(x_i - {x_c}_j)}{{r_{i,j}}^5} - \dfrac{15(x_i - {x_c}_j)(z_i - {z_c}_j)^2}{{r_{i,j}}^7}\ ,
-\\
-\dfrac{\partial^2}{\partial z \partial y \partial z} \dfrac{1}{r_{i,j}} &=
-\dfrac{3(y_i - {y_c}_j)}{{r_{i,j}}^5} - \dfrac{15(y_i - {y_c}_j)(z_i - {z_c}_j)^2}{{r_{i,j}}^7}\ ,
-\\
-\dfrac{\partial^2}{\partial z \partial z \partial z} \dfrac{1}{r_{i,j}} &=
-\dfrac{9(z_i - {z_c}_j)}{{r_{i,j}}^5} - \dfrac{15(z_i - {z_c}_j)^3}{{r_{i,j}}^7}\ .
-\end{aligned}
-\end{equation}   \bigskip
-
-As demonstrated in Section \ref{section_bz}, Equation \ref{eq_dipole_bz_z_deriv} can also be expressed in matrix linear form
-
-\begin{equation}
-\label{qdhqM4s9Ln1}
-\mathbf{{M_{zz}}} \mathbf{m} = \mathbf{{b_{zz}}}^{pred} \ .
-\end{equation}
-
-And the dipole moment vector $(\mathbf{m})$ is determined by solving
-
-\begin{equation}
- \mathbf{m} = {\left ( \mathbf{{M_{zz}}}^T \mathbf{{M_{zz}}} \right )}^{-1} \mathbf{{M_{zz}}}^T\mathbf{{b_{zz}}}^{obs}\ .
- %\mathbf{m} = {\left ( \mathbf{{M_z}_{_z}}^T \mathbf{{M_z}_{_z}} \right )}^{-1} \mathbf{{M_z}_{_z}}^T\mathbf{{b_z}_{_z}}^{obs}\ .
-\end{equation}
-
-
-\subsection{Subset optimization for inversion}
-
-Magnetic inversion is a crucial technique used in magnetic microscopy to gain insights into the internal structures and magnetic features of microscopic materials. However, dealing with extensive datasets (Figure \ref{methodology}a) has become a computational challenge, especially with the progressive refinement in spatial resolution of magnetic microscopes. Thus, strategic approaches are required to enhance efficiency. In this section, we will outline a key aspect of our methodology, which is the optimization of magnetic inversion through the careful selection of a subset of data.
-
-It is possible to reduce the time necessary to perform magnetic inversion by eliminating irrelevant data points that do not contribute significantly to the analysis. This involves identifying and extracting specific regions within the dataset where magnetic sources of interest are expected while minimizing the influence of noisy or irrelevant areas (Figure \ref{methodology}b). By focusing on these targeted regions, we can expedite the inversion process and also improve the accuracy and reliability of the results. It is important to note that selecting a subset of data is a mandatory part of the iterative Euler deconvolution process. The methodology for interfering sources inversion seamlessly integrates this step, making it more efficient and cohesive.
-
-
-\begin{figure}[tb!]
-  \centering
-  \includegraphics[width=1\linewidth]{figures/methodology.png}
-  \caption{
-    Tackling computational challenges in magnetic microscopy with extensive datasets.
-    a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
-    b) Streamlining data through pre-selected windows reduces the dataset size for inversion, ensuring efficiency without compromising final results.
-      }
-  \label{methodology}
-\end{figure}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Synthetic data application}
 
-As mentioned earlier, this study aims to deal with the mutual interference between the magnetic sources. The proposed methodologies were applied to two sets of complex synthetic data to assess the algorithm's performance, the datasets were designed to evaluate the methodology under different conditions. The inversion workflow was tested for its efficiency in the presence of interfering sources for further comparison with the methodology proposed by  \citet{Souza-Junior2023b}.
+As mentioned, this study aims to deal with the mutual interference between the magnetic sources. The proposed methodologies were applied to two sets of complex synthetic data to assess the algorithm's performance, the datasets were designed to evaluate the methodology under different conditions. The inversion workflow was tested for its efficiency in the presence of interfering sources for further comparison with the methodology proposed by  \citet{Souza-Junior2023b}.
 
 \begin{enumerate}
 \item \textbf{Method validation with interfering sources:}
@@ -263,7 +76,7 @@ The second model replicates the conditions of the first scenario, maintaining th
 
 \subsection{Method validation with interfering sources}\label{non-shifted}
 
-We analyze how the method works by simulating a complex scenario containing 103 magnetic sources randomly distributed across the imaged area of a synthetic thin section measuring $\qty{2000}{\um} \times \qty{2000}{\um}$. The synthetic $b_z$ data were generated on a regular grid with a spacing of $\qty{2}{\um}$ and a $\qty{5}{\um}$ sensor-sample distance. To make the simulation more realistic, we intentionally incorporated a high-frequency pseudo-random noise, with a zero mean and a standard deviation of $\qty{50}{\nano\tesla}$, as well as low-frequency noise. In real ferromagnetic particles, the Natural Remanent Magnetization (NRM) exhibits individual variations but tends to align with the inducing field direction. To capture this variability in our synthetic data, we sampled the dipole moment directions from two pseudo-random Gaussian distributions. The first group of sources ($M = 70$) was sampled from a distribution with a mean of $D = \ang{0}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. The second group of sources ($M = 30$) was sampled from a distribution with a mean of $D = \ang{180}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. These sources have distinct depths (between 1 and $\qty{20}{\um}$) and magnetic moment intensities (from $10^{-14}$ to $\qty{e-12}{\ampere\m\squared}$). Additionally, to further emulate the complexities observed in real data measurements, we manually introduced three deep-seated sources with higher dipole moments ($5 \times 10^{-11}$). 
+We analyze how the method works by simulating a complex scenario containing 103 magnetic sources randomly distributed across the imaged area of a synthetic thin section measuring $\qty{2000}{\um} \times \qty{2000}{\um}$. The synthetic $b_z$ data were generated on a regular grid with a spacing of $\qty{2}{\um}$ and a $\qty{5}{\um}$ sensor-sample distance. To make the simulation more realistic, we intentionally incorporated a high-frequency pseudo-random noise, with a zero mean and a standard deviation of $\qty{50}{\nano\tesla}$, and low-frequency noise. In real ferromagnetic particles, the Natural Remanent Magnetization (NRM) exhibits individual variations but tends to align with the inducing field direction. To capture this variability in our synthetic data, we sampled the dipole moment directions from two pseudo-random Gaussian distributions. The first group of sources ($M = 70$) was sampled from a distribution with a mean of $D = \ang{0}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. The second group of sources ($M = 30$) was sampled from a distribution with a mean of $D = \ang{180}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. These sources have distinct depths (between 1 and $\qty{20}{\um}$) and magnetic moment intensities (from $10^{-14}$ to $\qty{e-12}{\ampere\m\squared}$). Additionally, to further emulate the complexities observed in real data measurements, we manually introduced three deep-seated sources with higher dipole moments ($5 \times 10^{-11}$). 
 
 The inversion for this synthetic data was solved using both the standard method \citep{Souza-Junior2023b} and the proposed interfering sources methodologies. A summary of the comparison between the classic Euler method and the iterative approach revealed noteworthy results in the context of the analysis of the provided synthetic data. Upon applying the iterative Euler deconvolution method, a significant enhancement in the precision of the magnetic source position is observed when compared to the Euler deconvolution in the standard method. Figure~\ref{euler1}a illustrates the detected sources, showcasing the algorithm's effectiveness in identifying regions of interest. Figures ~\ref{euler1}b and ~\ref{euler1}c show the results obtained by the standard and iterative Euler methods, respectively. It becomes evident that the iterative method yields more accurate and refined estimates. This increase in accuracy is crucial, especially in scenarios where stronger magnetic sources can distort the magnetic field anomaly of weaker sources. Although this new methodology can markedly increase the accuracy in the estimated position for virtually all sources, the biggest errors are still related to clustered sources.
 %However, it is important to note that the enhanced precision with the iterative method comes at the cost of increased computational time, presenting a trade-off between superior results and computational efficiency.
