@@ -30,9 +30,9 @@ This study explores a new methodology to effectively manage interfering sources 
 The proposed methodology aims to enhance the accuracy of window-based inversion analyses in magnetic data, particularly in scenarios where stronger magnetic sources could introduce distortions in the results. As mentioned earlier, the edge detection algorithm is applied to the TGA map to segment the data windows of the magnetic sources, which follow the descending order of blob magnitude. The latter is directly proportional to the magnetic signal of the sources, hence it might be used in the process to account for the effect of stronger sources. This process is divided into distinct steps:
 
 \begin{enumerate}
-    \item \textbf{Position estimation:} The Euler deconvolution is applied in the window data to obtain a 3D position estimation $(x_c, y_c, z_c)$, assuming that the anomaly is caused by a point/dipolar source.
+    \item \textbf{Position estimation:} The Euler deconvolution is applied in the window data to obtain a 3D position estimation $(x_c, y_c, z_c)$, assuming that the anomaly is caused by a point/dipolar source \cite[after][]{Reid1990}. The Euler equation also gives the base level ($b$), which is the background shift field within the window.
     
-    \item \textbf{Magnetic moment inversion:} The dipole moment vector $(m_x, m_y, m_z)$ that best fits a set of $N$ observations of the vertical component of the magnetic field $\mathbf{b_z}^{obs}$ is obtained by a least-squares estimator. The latter also assumes a dipolar source located in the position obtained with the Euler deconvolution.
+    \item \textbf{Magnetic moment inversion:} The dipole moment vector $(m_x, m_y, m_z)$ that best fits a set of $N$ observations of the vertical component of the magnetic field $\mathbf{b_z}^{obs}$, corrected by the background field ($b$), is obtained by a least-squares estimator. The latter also assumes a dipolar source located in the position obtained with the Euler deconvolution \citep[\textit{e.g.}][]{Oliveira2015Estimation}.
     
     \item \textbf{Simplex optimization:} After obtaining the initial estimates of the 3D position $(x_c, y_c, z_c)$ and the dipole moment vector $(m_x, m_y, m_z)$, the forward model of the dipole's vertical component anomaly (${b_z}^{dip}$) can be obtained with:
     
@@ -43,13 +43,13 @@ The proposed methodology aims to enhance the accuracy of window-based inversion 
         
     \noindent{
 
-   The position and magnetic moment might still be refined to improve the inversion results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth, Nelder-Mead1965}, which employs the six parameters obtained in previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
+   The position and magnetic moment might still be refined to improve the inversion results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth}, which employs the six parameters obtained in previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
     \begin{equation}
     \label{misfit_equation}
-    \mathbf{\Phi} (x_c, y_z, z_c, m_x, m_y, m_z) = \| \mathbf{b_z}^{obs} - \mathbf{b_z}^{dip} \|^2.
+    \mathbf{\Phi} (x_c, y_z, z_c, m_x, m_y, m_z) = \| (\mathbf{b_z}^{obs}-b) - \mathbf{b_z}^{dip} \|^2.
     \end{equation} 
     
-     The Nelder-Mead method, a gradient-free optimization technique, systematically searches the optimal solution of the Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space. This is particularly useful for optimizing functions where gradients are difficult to compute or not available. However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and has been addressed by normalizing the magnetic moment vector using the initial guess dipole magnitude and the position vector with respect to the initial position estimates. This normalization process is implemented to ensure that each parameter falls within a unitary range, effectively addressing the significant disparity of up to seven orders of magnitude between the position and magnetic moment.
+     The Nelder-Mead method, a gradient-free optimization technique, systematically searches the optimal solution of the Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space \cite{Nelder-Mead1965}. This is particularly useful for optimizing functions where gradients are difficult to compute or not available. However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and has been addressed by normalizing the magnetic moment vector using the initial guess dipole magnitude and the position vector with respect to the initial position estimates. This normalization process is implemented to ensure that each parameter falls within a unitary range, effectively addressing the significant disparity of up to seven orders of magnitude between the position and magnetic moment.
      }
     
     \item \textbf{Calculation of theoretical magnetic signals:} The theoretical magnetic signal associated with the identified source was computed using a dipole forward model (Equation~\ref{bz_dipole_equation}), with the aid of Choclo python library \citep{choclo2022}, and the refined parameter vector. This yielded a theoretical representation of the expected magnetic effects for the source.
@@ -63,36 +63,20 @@ This step-by-step procedure is subsequently employed for all detected particles 
 
 \section{Synthetic data application}
 
-As mentioned, this study aims to deal with the mutual interference between the magnetic sources. The proposed methodologies were applied to two sets of complex synthetic data to assess the algorithm's performance, the datasets were designed to evaluate the methodology under different conditions. The inversion workflow was tested for its efficiency in the presence of interfering sources for further comparison with the methodology proposed by  \citet{Souza-Junior2023b}.
+As mentioned, this study aims to deal with the mutual interference between the magnetic sources. The proposed methodology was applied to a complex synthetic data to assess the algorithm's performance. The inversion workflow was tested for its efficiency in the presence of interfering sources for further comparison with the methodology proposed by  \citet{Souza-Junior2023b}.
 
-\begin{enumerate}
-\item \textbf{Method validation with interfering sources:}
-The first model scenario features several dipole sources with different moment magnitude, inclination, and declination clustered around two stable directions. The vertical magnetic field ($b_z$) generated from these sources is corrupted by both low and high-frequency noise, simulating real-world magnetic microscopy data. 
+\subsection{Method validation with interfering sources}
 
-\item \textbf{Shifted magnetic field acquisition:}
-The second model replicates the conditions of the first scenario, maintaining the same simulation parameters for the sources. However, in this case, the magnetic field data undergoes a positive shift to simulate the acquisition process in magnetic microscopy with a shifted baseline. This scenario provides insights into the algorithm's robustness and accuracy when faced with a systematically shifted magnetic field, as encountered in certain microscopic magnetic data acquisition setups.
-\end{enumerate}
+The model scenario features several dipole sources with different moment magnitude, inclination, and declination clustered around two stable directions. The vertical magnetic field ($b_z$) generated from these sources is corrupted by both low and high-frequency noise, simulating real-world magnetic microscopy data. However, in this case, the magnetic field data undergoes a positive shift to simulate the acquisition process in magnetic microscopy with a shifted baseline. This scenario provides insights into the algorithm's robustness and accuracy when faced with a systematically shifted magnetic field, as encountered in certain microscopic magnetic data acquisition setups.
 
-\subsection{Method validation with interfering sources}\label{non-shifted}
+We analyze how the method works by simulating a complex scenario containing 103 magnetic sources randomly distributed across the imaged area of a synthetic thin section measuring $\qty{2000}{\um} \times \qty{2000}{\um}$. The synthetic $b_z$ data were generated on a regular grid with a spacing of $\qty{2}{\um}$ and a $\qty{5}{\um}$ sensor-sample distance. To make the simulation more realistic, we intentionally incorporated a high-frequency pseudo-random noise, with a zero mean and a standard deviation of $\qty{50}{\nano\tesla}$, and also a low-frequency noise causing a positive shift in the magnetic data. In real ferromagnetic particles, the Natural Remanent Magnetization (NRM) exhibits individual variations but tends to align with the inducing field direction. To capture this variability in our synthetic data, we sampled the dipole moment directions from two pseudo-random Gaussian distributions. The first group of sources ($M = 70$) was sampled from a distribution with a mean of $D = \ang{0}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. The second group of sources ($M = 30$) was sampled from a distribution with a mean of $D = \ang{180}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. These sources have distinct depths (between 1 and $\qty{20}{\um}$) and magnetic moment intensities (from $10^{-14}$ to $\qty{e-12}{\ampere\m\squared}$). Additionally, to further emulate the complexities observed in real data measurements, we manually introduced three deep-seated sources with higher dipole moments ($5 \times 10^{-11}$). 
 
-We analyze how the method works by simulating a complex scenario containing 103 magnetic sources randomly distributed across the imaged area of a synthetic thin section measuring $\qty{2000}{\um} \times \qty{2000}{\um}$. The synthetic $b_z$ data were generated on a regular grid with a spacing of $\qty{2}{\um}$ and a $\qty{5}{\um}$ sensor-sample distance. To make the simulation more realistic, we intentionally incorporated a high-frequency pseudo-random noise, with a zero mean and a standard deviation of $\qty{50}{\nano\tesla}$, and low-frequency noise. In real ferromagnetic particles, the Natural Remanent Magnetization (NRM) exhibits individual variations but tends to align with the inducing field direction. To capture this variability in our synthetic data, we sampled the dipole moment directions from two pseudo-random Gaussian distributions. The first group of sources ($M = 70$) was sampled from a distribution with a mean of $D = \ang{0}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. The second group of sources ($M = 30$) was sampled from a distribution with a mean of $D = \ang{180}\pm\ang{10}$ and $I = \ang{0}\pm\ang{10}$. These sources have distinct depths (between 1 and $\qty{20}{\um}$) and magnetic moment intensities (from $10^{-14}$ to $\qty{e-12}{\ampere\m\squared}$). Additionally, to further emulate the complexities observed in real data measurements, we manually introduced three deep-seated sources with higher dipole moments ($5 \times 10^{-11}$). 
-
-The inversion for this synthetic data was solved using both the standard method \citep{Souza-Junior2023b} and the proposed interfering sources methodologies. A summary of the comparison between the classic Euler method and the iterative approach revealed noteworthy results in the context of the analysis of the provided synthetic data. Upon applying the iterative Euler deconvolution method, a significant enhancement in the precision of the magnetic source position is observed when compared to the Euler deconvolution in the standard method. Figure~\ref{euler1}a illustrates the detected sources, showcasing the algorithm's effectiveness in identifying regions of interest. Figures ~\ref{euler1}b and ~\ref{euler1}c show the results obtained by the standard and iterative Euler methods, respectively. It becomes evident that the iterative method yields more accurate and refined estimates. This increase in accuracy is crucial, especially in scenarios where stronger magnetic sources can distort the magnetic field anomaly of weaker sources. Although this new methodology can markedly increase the accuracy in the estimated position for virtually all sources, the biggest errors are still related to clustered sources.
+The inversion for this synthetic data was solved using both the standard method \citep{Souza-Junior2023b} and the proposed interfering sources methodology. A summary of the comparison between the classic Euler method and the iterative approach revealed noteworthy results in the context of the analysis of the provided synthetic data. Upon applying the iterative Euler deconvolution method, a significant enhancement in the precision of the magnetic source position is observed when compared to the Euler deconvolution in the standard method. Figure~\ref{euler2}a illustrates the detected sources, showcasing the algorithm's effectiveness in identifying regions of interest. Figures ~\ref{euler2}b and ~\ref{euler2}c show the results obtained by the standard and iterative Euler methods, respectively. Although both techniques are unaffected by the presence of a shift in the magnetic field, it becomes evident that the iterative method yields more accurate and refined estimates. This increase in accuracy is crucial, especially in scenarios where stronger magnetic sources can distort the magnetic field anomaly of weaker sources. Although this new methodology can markedly increase the accuracy in the estimated position for virtually all sources, the biggest errors are still related to clustered sources.
 %However, it is important to note that the enhanced precision with the iterative method comes at the cost of increased computational time, presenting a trade-off between superior results and computational efficiency.
-
-
-These iterative Euler estimated positions were used for the magnetic inversion due to their better results except for the standard method results, which were kept unchanged from the results presented by \citet{Souza-Junior2023b}. Figure~\ref{inversion1} summarizes the comparison concerning the angular misfit, the magnetic moment misfit, and the r-squared score, respectively, for the standard (Figures~\ref{inversion1}a-c), iterative (Figures~\ref{inversion1}d-f) interfering sources using $b_z$ (Figures~\ref{inversion1}g-i), and interfering sources using the vertical derivative (Figures~\ref{inversion1}j-l). Overall, as predicted, every single interfering source method outperformed the standard one in all three of the measured parameters. It is worth mentioning that the iterative (Figures~\ref{inversion1}d) and the $b_{zz}$ interfering sources (Figures~\ref{inversion1}j) yield the best results for the angular misfit, with barely any difference, and also for the r-squared score. Nevertheless, the $b_{z}$ interfering sources technique shows slightly better results for the magnetic moment misfit. Although displaying better results than the standard method, none of the proposed methodologies are capable of dealing with tightly clustered sources, especially for the magnetic moment misfit. This observation might have its cause inherited rooted in the limitations of the Euler deconvolution, even after all the improvement of the iterative Euler deconvolution (Figures~\ref{euler1}c), which triggers the ambiguity between the source's depth with its magnetic intensity. This example shows that all proposed methodologies can be applied to magnetic microscopy yielding better results than the standard method.
-
-
-\subsection{Shifted magnetic field acquisition}
-
-To assess the proposed interference source techniques' ability to deal with shifted data, often observed in real magnetic microscopic data, a polynomial shift was added to the $b_z$ data vector in the previous scenario setup. 
-LINKING SENTENCE
-In macro-scale potential field geophysical surveys, when there is a discernible indication of a low-frequency component compromising the dataset, it becomes necessary to employ techniques that can separate the contributions of the long-wavelength (``regional'') and the short-wavelength (``residual'') components, the latter is usually associated with the targeted bodies in the studies. This requirement holds for magnetic microscopic scale acquisitions, necessitating the application of a regional-residual separation technique. To accomplish this, a first-degree polynomial fit was applied to the shifted $b_z$ magnetic field data (Figure~\ref{euler2}a) to predict the low-frequency component. This procedure was carried out using the Verde Python package \citep{verde2018}. Subsequently, the low-frequency anomaly was subtracted from the shifted $b_z$ magnetic field data, as shown in Figure~\ref{euler2}b. The Euler deconvolution algorithms for the standard (Figure~\ref{euler2}c) and iterative (Figure~\ref{euler2}d) approaches were then applied and compared. It is noted a substantial improvement in the magnetic source position estimation by the iterative method. The results are very similar to what happened to the scenario in the Subsections~\ref{non-shifted}, this is most likely caused by the robustness of the derivatives, used in the Euler equation, for long-wavelength signals.
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{figures/euler-comparion-2.png}
+  \includegraphics[width=1\linewidth]{paper/figures/euler-comparion-2.png}
   \caption{
     % Addressing computational challenges in magnetic microscopy with extensive datasets.
     % a) Complete synthetic dataset featuring all N observation points including areas lacking relevant information.
@@ -101,7 +85,8 @@ In macro-scale potential field geophysical surveys, when there is a discernible 
   \label{euler2}
 \end{figure}
 
-Figure~\ref{inversion2} succinctly presents a comprehensive comparison encompassing angular misfit, magnetic moment misfit, and the r-squared score. The comparison is made across standard inversion results (Figures~\ref{inversion2}a-c), iterative inversion results for interfering sources (Figures~\ref{inversion2}d-f), interference with $b_z$ (Figures~\ref{inversion2}g-i), and interfering sources using the vertical derivative (Figures~\ref{inversion2}j-l). Differently from what was observed in the previous subsection, only the iterative and interfering sources using vertical derivative techniques consistently outperformed the standard method. Both techniques remained unaffected by the shift in the magnetic field, as well as the standard one. However, this pattern somehow changed for the interference source using $b_z$. Even though this technique yielded errors seemingly lower than the ones from the standard methodology, concerning the magnetic direction and moment misfit, it also demonstrated high variability in the results (not shown here) according to the shift in the magnetic field and the regional-residual separation technique used. For example, comparing the magnetic grains in the upper left region of Figure~\ref{euler2}b with Figure~\ref{inversion2}g it is clear that the sudden increase in the direction misfit is closely related to the region where the polynomial fit failed to remove the long-wavelength interference. This is also reflected in the r-squared score (Figure~\ref{inversion2}i), which makes this specific approach highly dependent on an ideal separation method. Based on this scenario, it seems that the iterative and interfering sources using the vertical derivative approaches might be more reliable for magnetic microscopy studies.
+These iterative Euler estimated positions were used for the magnetic inversion due to their better results except for the standard method results, which were kept unchanged from the results presented by \citet{Souza-Junior2023b}. Figure~\ref{inversion2} summarizes the comparison concerning the angular misfit, the magnetic moment misfit, and the r-squared score, respectively, for the standard (Figures~\ref{inversion2}a-c), and iterative interfering sources (Figures~\ref{inversion2}d-f). Overall, as predicted, the interfering source method outperformed the standard one in all three of the measured parameters. Nevertheless, the proposed methodologies are capable of dealing with tightly clustered sources, especially for the magnetic moment misfit. This observation might have its cause inherited rooted in the limitations of the Euler deconvolution, even after all the improvement of the iterative Euler deconvolution (Figures~\ref{euler2}c), which triggers the ambiguity between the source's depth with its magnetic intensity. This example shows that the proposed methodology can be applied to magnetic microscopy yielding better results than the standard method.
+
 
 \begin{figure}[tb!]
   \centering
@@ -117,6 +102,38 @@ Figure~\ref{inversion2} succinctly presents a comprehensive comparison encompass
 % In all the synthetic and real data analyzed in this paper, the vertical derivatives were computed using the central finite difference equation (Equation x).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Real data application}
+
+To test whether the proposed method would be able to determine the
+magnetization directions and the magnetic moment of particles in natural
+samples, 
+
+Following the same procedure as the synthetic data section 
+
+we selected a previously studied carbonate stalagmite sample from the Wintimdouine cave in the Agadir region (Morocco) \citep{Ait2019Hydro}. This speleothem contains both magnetite and hematite as the main carriers of
+magnetic remanence, as attested by thermomagnetic curves with temperature
+decays at {\textasciitilde}580 °C and {\textasciitilde}680 °C, and bimodal
+curves of isothermal remanent magnetization (IRM) acquisition \citep{carmo2019speleothem}.
+
+In order to provide two distinct directions associated with the different
+magnetic mineral types in this sample, we applied two IRM pulse fields of 2.7 T and 0.3 T, respectively toward the +Y and -Y directions. In this way, the high coercivity grains (hematite) would point towards +Y and the low coercivity ones (magnetite) would align in the -Y direction.
+
+\begin{enumerate}
+  \item For the +Y direction:
+    \begin{itemize}
+      \item Applied an IRM pulse field with a strength of 2.7 T.
+      \item Result: High coercivity grains (hematite) pointing towards +Y.
+    \end{itemize}
+  
+  \item For the -Y direction:
+    \begin{itemize}
+      \item Applied a separate IRM pulse field with a strength of 0.3 T.
+      \item Result: Low coercivity grains (magnetite) aligning in the -Y direction.
+    \end{itemize}
+\end{enumerate}
+
+After remanence acquisition, we performed a magnetic map with the Quantum
+Diamond Microscope (QDM) at Harvard University over a sample section of
+approximately $\qty{1410}{\um} \times \qty{2256}{\um}$ (Figure~\ref{real-data}a) with a grid spacing of \qty{2.35}{\um} and a sensor-sample distance of approximately \qty{5}{\um}, totaling 576,000 data points. The QDM is housed in a shielded room, in order to avoid the influence of the Earth's magnetic field while the data were taken in projected magnetic microscopy mode and converted to the vertical component of magnetic field ($b_z$) using a spectral approach \citep{Lima2009, Fu2020, Glenn2017}. We applied a bias field of \qty{0.9}{\milli\tesla} during the measurement, which was periodically reversed to result in an effective background field of $< \qty{1}{\micro\tesla}$.
 
 \begin{figure}[tb!]
   \centering
