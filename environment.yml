@@ -1,4 +1,4 @@
-name: micromag-interfering-sources
+name: micromag-euler-dipole
 channels:
   - conda-forge
   - defaults
