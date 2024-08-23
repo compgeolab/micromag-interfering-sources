@@ -34,46 +34,170 @@ Another way to insert additional information without the requirement of performi
 
 % However, estimating the source's position based on Euler deconvolution revealed that stronger magnetic sources may influence the estimated positions of nearby weaker ones. Therefore, it becomes imperative to consider the interplay among the sources to estimate their magnetic parameters and position accurately. Understanding how these magnetic sources interact with each other is crucial for refining our estimation process and ensuring robust results in magnetic parameter estimation.
 
-This study explores a new methodology to effectively manage interfering sources during the inversion process. Which is designed to mitigate the magnetic sources' interference and enhance the precision of the inversion analyses proposed by \citet{Souza-Junior2023b}.
+This study explores a new methodology to manage interfering sources during the inversion process effectively. Which is designed to mitigate the magnetic sources' interference and enhance the precision of the inversion analyses proposed by \citet{Souza-Junior2023b}.
 
-\subsection{Magnetic inversion: interfering sources}
+\subsection{Sources detection}
+ Yago's problem
 
-% \subsubsection{Iterative Euler deconvolution}
+\subsection{magnetic vector inversion with interfering sources}\label{inversion-section}
 
-The interference source methodology is proposed to enhance the accuracy of window-based inversion analyses in magnetic data, particularly in scenarios where stronger magnetic fields could introduce distortions in the results. As mentioned earlier, the edge detection algorithm is applied to the total gradient anomaly map to segment the data windows of the magnetic sources, which follow the descending order of blob magnitude. The latter is directly proportional to the magnetic signal of the sources, hence it might be used in the process to account for the effect of stronger sources. This process is divided into distinct steps:
+The interference source methodology is proposed to enhance the accuracy of window-based inversion analyses in magnetic data, particularly in scenarios where stronger magnetic fields could introduce distortions in the results. \textcolor{red}{As mentioned earlier, the edge detection algorithm is applied to the total gradient anomaly map to segment the data windows of the magnetic sources, which follow the descending order of blob magnitude (Yago)}. The latter is directly proportional to the magnetic signal of the sources, hence it might be used to account for the effect of stronger sources. This process is divided into distinct steps:
 
-\begin{enumerate}
-    \item \textbf{Position estimation:} The Euler deconvolution is applied in the window data to obtain a 3D position estimation $(x_c, y_c, z_c)$, assuming that a point/dipolar source causes the anomaly \cite[after][]{Reid1990}. The Euler equation also gives the base level ($b$), which is the background shift field within the window.
+
+\subsubsection{Position estimation}
+    Euler deconvolution (ED) is widely applied in aeromagnetic surveys \citep{Barbosa2011, Melo2013, Melo2018} to obtain a 3D position estimation \cite[after][]{Reid1990}. The only assumption is the source's shape given by the structural index ($\eta$), in the case of a dipole $\eta = 3$. The Euler's homogeneity equation is then given by
     
-    \item \textbf{Magnetic moment inversion:} The dipole moment vector $(m_x, m_y, m_z)$ that best fits a set of $N$ observations of the vertical component of the magnetic field $\mathbf{b_z}^{obs}$, corrected by the background field ($b$), is obtained by a least-squares estimator. The latter also assumes a dipolar source located in the position obtained with the Euler deconvolution \citep[\textit{e.g.}][]{Oliveira2015Estimation}.
+        \begin{equation}
+        \label{eq_euler_homogeneity}
+        (x - x_c)\partial_x f
+        + (y - y_c)\partial_y f
+        + (z - z_c)\partial_z f
+        = (b - f)\eta
+        \ .
+        \end{equation}
     
-    \item \textbf{Simplex optimization:} After obtaining the initial estimates of the 3D position $(x_c, y_c, z_c)$ and the dipole moment vector $(m_x, m_y, m_z)$, according to \citet{Blakely1996} the forward model of the dipole's vertical component anomaly (${b_z}^{dip}$) can be obtained with:
+    \noindent{The solution of the ED is performed in the rearranged pseudo-parametric model}
     
     \begin{equation}
-        \label{bz_dipole_equation}
-        {b_z}^{dip} = 3 \frac{m_x (x-x_c) + m_y (y-y_c) + m_z (z-z_c)}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^5} - \frac{m_z}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^3} .
+    x_c \partial_x f + y_c \partial_y f + z_c \partial_z f + \eta b
+    =
+    x \partial_x f + y \partial_y f + z \partial_z f + \eta f
+    \ .
+    \end{equation}
+    
+    For a given magnetic field anomaly ($f$) and its directional derivatives ($\partial \alpha f$, $\alpha = x, y, z$ ) at the i\textsuperscript{th} observation point ($x_i, y_i, z_i$), $i=1, 2,..., N$, we can describe an $N \times 4$ system of equations as:
+    
+    \begin{equation}
+    {\overbrace{
+    \begin{bmatrix}
+      {\partial_x f}_1 & {\partial_y f}_1 & {\partial_z f}_1 & \eta \\
+      {\partial_x f}_2 & {\partial_y f}_2 & {\partial_z f}_2 & \eta \\
+      \vdots & \vdots & \vdots & \vdots \\
+      {\partial_x f}_N & {\partial_y f}_N & {\partial_z f}_N & \eta
+    \end{bmatrix}
+    }^{\mathbf{G}}}_{N \times 4}
+    {\overbrace{
+    \begin{bmatrix}
+      x_c \\ y_c \\ z_c \\ b
+    \end{bmatrix}
+    }^{\mathbf{p}}}_{4 \times 1}
+    =
+    {\overbrace{
+    \begin{bmatrix}
+      x_1 {\partial_x f}_1 + y_1 {\partial_y f}_1 + z_1 {\partial_z f}_1 + \eta f_1 \\
+      x_2 {\partial_x f}_2 + y_2 {\partial_y f}_2 + z_2 {\partial_z f}_2 + \eta f_2 \\
+      \vdots \\
+      x_N {\partial_x f}_N + y_N {\partial_y f}_N + z_N {\partial_z f}_N + \eta f_N \\
+    \end{bmatrix}
+    }^{\mathbf{h}}}_{N \times 1}
+    \ .
+    \end{equation}
+    
+    The solution of this linear system is defined by the vector $\mathbf{p}$ that minimizes the misfit function $\phi(\mathbf{p})$, given by the sum of the squared differences between the pseudo-observation data ($\mathbf{h}^o$) and the predicted data ($\mathbf{h}$):
+    
+    \begin{equation}
+    \label{function_phi}
+    \phi(\mathbf{p}) = \min_{\mathbf{p}} \| \mathbf{G}\mathbf{p} - \mathbf{\mathbf{h}^o} \|_2^2\ = \min_{\mathbf{p}} \| \mathbf{h} - \mathbf{\mathbf{h}^o} \|_2^2\
+    .
+    \end{equation}
+    
+    \noindent{Which is obtained by applying}
+    
+    \begin{equation}
+    \label{euler_solution}
+    \mathbf{p} = {[\mathbf{G}^T \mathbf{G}]}^{-1} \mathbf{G}^T \mathbf{h}^o\ .
+    \end{equation}
+    
+    The parameters vector $\mathbf{p}$ contains the dipolar source's coordinates, $x_c$, $y_c$, and $z_c$. It also contains the base level ($b$), the background field within the window.
+    
+\subsubsection{Magnetic moment inversion} 
+    One of the main drawbacks of estimating a physical property from potential data, such as the dipole moment vector $(m_x, m_y, m_z)$, lies in its ambiguity \citep{Blakely1996}. This is commonly circumvented by adding additional information about the sources (\textit{e.g.} shape, position, and size). Therefore, the ED solution (Equation~\ref{euler_solution}) might be used as prior information to recover the dipole moment of the sources causing the anomaly within the window data.
+    
+     Following \citet{Oliveira2015Estimation}, the vertical component of the magnetic field ($fz$), measured at the i\textsuperscript{th} observation point ($i=1, 2, ..., N$), produced by a dipolar source located in the Cartesian coordinates $x_c, y_c$ and $z_c$, can be calculated using:
+
+     \begin{equation}
+    \label{eq_dipole_bz}
+    {\overbrace{\begin{bmatrix}
+    \dfrac{\mu_0}{4\pi} \dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_i}
+    & \dfrac{\mu_0}{4\pi} \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_i}
+    & \dfrac{\mu_0}{4\pi} \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_i}
+    \end{bmatrix}}^{\mathbf{A}}}_{N \times 3}
+    {\overbrace{{\begin{bmatrix}
+    m_x \\ m_y \\ m_z
+    \end{bmatrix}}}^{\mathbf{m}}}_{3 \times 1}
+    =
+    ~{\overbrace{\begin{bmatrix}
+    fz_i
+    \end{bmatrix}}^{\mathbf{d}}}_{N \times 1}
+    \ .
+    \end{equation}
+
+    \noindent{
+    Where $r = \sqrt{(x_i - x_c)^2 + (y_i - y_c)^2 + (z_i - z_c)^2}$ is the distance between the observation point $(x_i, y_i, z_i)$ and the dipolar source $(x_c, y_c, z_c)$, $\mu_0$ is the vacuum magnetic permeability, and the second-order derivatives terms in Equation~\ref{eq_dipole_bz} are:
+    
+    \begin{equation}
+    \begin{aligned}
+    \dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_i} &=
+    \dfrac{3(z_i - z_c)(x_i - x_c)}{{r_i}^5}\ ,
+    \\
+    \dfrac{\partial^2}{\partial z \partial y} \dfrac{1}{r_i} &=
+    \dfrac{3(z_i - z_c)(y_i - y_c)}{{r_i}^5}\ ,
+    \\
+    \dfrac{\partial^2}{\partial z \partial z} \dfrac{1}{r_i} &=
+    \dfrac{3(z_i - z_c)^2}{{r_i}^5} - \dfrac{1}{{r_i}^3}\ .
+    \end{aligned}
+    \end{equation}}
+
+    The $N \times 3$ linear system in the Equation~\ref{eq_dipole_bz} has its solution defined by the parameter vector ($\mathbf{m}$) that minimizes the misfit function $\psi(\mathbf{m})$ given by the residual between the predicted ($\mathbf{\mathbf{d}}$) and observed ($\mathbf{\mathbf{d}^o}$) data vectors. The latter is also  corrected by the background field ($b$) obtained with the ED. Then the misfit function $\psi(\mathbf{m})$ can be written as:
+   
+    \begin{equation}
+    \label{psi_function}
+    \psi(\mathbf{m}) = \min_{\mathbf{m}} \| \mathbf{A}\mathbf{m} - \mathbf{\mathbf{d}^o} \|_2^2\ = \min_{\mathbf{m}} \| \mathbf{d} - (\mathbf{\mathbf{d}^o}-b) \|_2^2\
+    .
+    \end{equation}
+
+    The parameters vector ($\mathbf{m}$), containing the Cartesian components of the magnetic moment, can be obtained by the least-squares estimator:
+
+    \begin{equation}
+    \label{dipole_moment_solution}
+    \mathbf{m} = {[\mathbf{A}^T \mathbf{A}]}^{-1} \mathbf{A}^T (\mathbf{d}^o - b)\ .
     \end{equation}
         
-    \noindent{
+\subsubsection{Simplex optimization} 
+     The forward model of the dipole's vertical component anomaly from the Equation~\ref{eq_dipole_bz} can be rewritten as:
+    
+    % \begin{equation}
+    %     \small
+    %     \label{bz_dipole_equation}
+    %     {b_z}^{dip} = \frac{\mu_0}{4 \pi} \left [ 3 \frac{ (z-z_c) \left ( m_x (x-x_c) + m_y (y-y_c) + m_z (z-z_c) \right )}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^{5/2}} - \frac{m_z}{((x-x_c)^2 + (y-y_c)^2 + (z-z_c)^2)^{3/2}} \right ] .
+    % \end{equation}
 
-   The position and magnetic moment might still be refined to improve the inversion results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth}, which employs the six parameters obtained in previous steps as initial guesses for the objective function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
+    \begin{equation}
+        \small
+        \label{bz_dipole_equation}
+        {d}_{i} = \frac{\mu_0}{4 \pi} \left [ 3 \frac{ (z_i-z_c) \left ( m_x (x_i-x_c) + m_y (y_i-y_c) + m_z (z_i-z_c) \right )}{{r_i}^5} - \frac{m_z}{{r_i}^3} \right ] .
+    \end{equation}
+    
+     After obtaining the initial estimates of the 3D position $(x_c, y_c, z_c)$ and the dipole moment vector $(m_x, m_y, m_z)$, both position and magnetic moment might still be refined to improve the models results. For this process, the optimization technique utilized was the Scipy Nelder-Mead method \citep{2020SciPy-NMeth}, which employs these six parameters obtained in previous steps as initial guesses for the goal function (Equation~\ref{bz_dipole_equation}). The misfit function to be minimized is given by:
+    
     \begin{equation}
     \label{misfit_equation}
-    \mathbf{\Phi} (x_c, y_z, z_c, m_x, m_y, m_z) = \| (\mathbf{b_z}^{obs}-b) - \mathbf{b_z}^{dip} \|^2.
+    \mathbf{\Phi} (x_c, y_z, z_c, m_x, m_y, m_z) = \| (\mathbf{d}^{o}-b) - \mathbf{d} \|^2.
     \end{equation} 
     
-     The Nelder-Mead method, a gradient-free optimization technique, systematically searches the optimal solution of Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space \cite{Nelder-Mead1965}. This is particularly useful for optimizing functions where gradients are difficult to compute or unavailable. However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and has been addressed by normalizing the magnetic moment vector using the initial guess dipole magnitude and the position vector concerning the initial position estimates. This normalization process ensures that each parameter falls within a unitary range.
-     % , effectively addressing the significant disparity between the position and magnetic moment.
-     }
-    
-    \item \textbf{Calculation of theoretical magnetic signals:} The theoretical magnetic signal associated with the identified source was computed using a dipole forward model (Equation~\ref{bz_dipole_equation}), with the aid of Choclo python library \citep{choclo2022}, and the refined parameter vector. This yielded a theoretical representation of the expected magnetic effects for the source.
-    
-    \item \textbf{Signal removal:} The theoretical magnetic signal from the strong source was selectively removed from the dataset. This leads to a dataset that is devoid of the (currently) stronger source influence, allowing for a gradual isolation of the contributions from weaker sources. The directional derivatives were also recalculated to re-calibrate the next Euler deconvolution within this updated dataset.
- 
-\end{enumerate}
+     The Nelder-Mead method, a gradient-free optimization technique, systematically searches the optimal solution of Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space \citep{Nelder-Mead1965}. This is particularly useful for optimizing functions where gradients are difficult to compute or unavailable. However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and has been addressed by normalizing the magnetic moment vector using the initial guess dipole magnitude and the position vector concerning the initial position estimates. This normalization process ensures that each parameter falls within a unitary range.
+     
 
-This step-by-step procedure is subsequently employed for all detected particles in the sample, leading to an improved position estimation compared to the original methodology. This new proposed method, designed to mitigate the impact of stronger sources and with a better estimation of positions, significantly enhances the precision of subsequent inversion analyses. However, a trade-off between achieving better results and incurring longer computational runtime is unavoidable. 
+% \subsubsection{Calculation of theoretical magnetic signals} 
+\subsubsection{Signal removal} 
+    The theoretical magnetic signal associated with the identified source was computed using a dipole forward model (Equation~\ref{bz_dipole_equation}), with the aid of Choclo python library \citep{choclo2022}, and the refined parameter vector. This yielded a theoretical representation of the expected magnetic effects for the source.
 
+    The theoretical magnetic signal from the strong source was selectively removed from the dataset. This leads to a dataset devoid of the (currently) stronger source influence, allowing for a gradual isolation of the contributions from weaker sources. The directional derivatives were also recalculated to re-calibrate the next Euler deconvolution within this updated dataset.
+
+    This step-by-step procedure is subsequently employed for all detected particles in the sample, leading to an improved position estimation compared to the original methodology. This new proposed method, designed to mitigate the impact of stronger sources and with a better estimation of positions, significantly enhances the precision of subsequent inversion analyses. However, a trade-off between achieving better results and incurring longer computational runtime is unavoidable.
+
+\subsection{Residual anomaly detection}
+    In the original methodology, sources are initially identified for window selection based on a total gradient anomaly (TGA) map, where the contrast is stretched to help identify sources with varying intensities (Figure), both strong and weak. However, realizing that this approach was insufficient to identify all relevant sources. In order to address this issue, the procedure described in the Section~\ref{inversion-section} was performed and the residual anomaly map obtained. Thus, based on this new map, it is possible to reapplied the source detection algorithm. This new step allowed for the identification of weaker sources, as the signal from stronger sources was eliminated, given the reduced ratio disparity between the signal of weaker magnetic sources and the residual anomaly from each window inversion.
 
 \section{Synthetic data application}
 % As mentioned, this study aims to deal with the mutual interference between the magnetic sources. 
@@ -122,7 +246,7 @@ Diamond Microscope (QDM) at Harvard University in a room shielded against the in
   \label{real-data-euler}
 \end{figure}
 
-Afterward, the magnetic moments and directions of all identified magnetic carriers were obtained using both methodologies. The results for the standard method do not differ from the ones presented by \citet{Souza-Junior2023b}, and the criteria for selecting the best data in the filtering process was the R-squared value \citep[similar to the dipolarity parameter,][]{Fu2020} equals to 0.85, which means that at least 85\% of the recovered data must be explained by a dipolar source. Both induced directions trends are recovered (Figure~\ref{real-data-stereograms}a), although applying the filtering criteria these directions are significantly better (Figure~\ref{real-data-stereograms}b) due to the removal of the spurious results, more often than not perfect dipolar data are also removed during the filtering process and only 46 particles pass the criteria. As mentioned earlier, one of the possible causes for this effect is the interference of stronger sources and/or shifted field, hence the reason to try the interference sources technique. The presented methodology not only yields more clustered directions within the induced field (Figure~\ref{real-data-stereograms}c) but also guarantees that the filtering criteria avoid penalizing weaker magnetic sources (Figure~\ref{real-data-stereograms}d) when compared with the original methodology. In this case, 66 magnetic sources pass the filtering criteria, thus smaller or weaker sources, but still dipolar ones, are no longer associated with low R² values. This is a clear sign of the mitigation of the interference from stronger dipoles or any acquisition shifts in the magnetic field.  
+Afterward, the magnetic moments and directions of all identified magnetic carriers were obtained using both methodologies. The results for the standard method do not differ from the ones presented by \citet{Souza-Junior2023b}, and the criteria for selecting the best data in the filtering process was the R-squared value \citep[similar to the dipolarity parameter,][]{Fu2020} equals to 0.85, which means that at least 85\% of the recovered data must be explained by a dipolar source. Both induced directions trends are recovered (Figure~\ref{real-data-stereograms}a), although applying the filtering criteria these directions are significantly better (Figure~\ref{real-data-stereograms}b) due to the removal of the spurious results, more often than not perfect dipolar data are also removed during the filtering process and only 46 particles pass the criteria. As mentioned earlier, one of the possible causes for this effect is the interference of stronger sources and/or shifted field, hence the reason to try the interference sources technique. The presented methodology not only yields more clustered directions within the induced field (Figure~\ref{real-data-stereograms}c) but also guarantees that the filtering criteria avoid penalizing weaker magnetic sources (Figure~\ref{real-data-stereograms}d) when compared with the original methodology. In this case, 66 magnetic sources pass the filtering criteria, thus smaller or weaker sources, but still dipolar ones, are no longer associated with low R² values. This is a clear sign of the mitigation of interference from stronger dipoles or any acquisition shifts in the magnetic field.  
 
 
 \begin{figure}[tb!]
