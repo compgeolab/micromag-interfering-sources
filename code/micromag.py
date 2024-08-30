@@ -7,7 +7,7 @@ Functions for performing the processing and inversion of the microscopy data.
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-import mplstereonet
+# import mplstereonet
 import scipy.linalg
 import scipy.io
 import skimage.feature
