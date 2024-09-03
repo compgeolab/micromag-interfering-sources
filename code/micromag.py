@@ -561,5 +561,22 @@ def plot_stereonet(dipole_moments, ax=None, cmap="plasma", cmap_norm=plt.Normali
         edgecolors=colors[~positive_inc],
         **kwargs,
     )
+
+    # if add_sum:
+    #     inclination_sum, declination_sum, _ = vector_to_angles(np.sum(dipole_moments, axis=0))
+
+    #     if inclination_sum>=0:
+    #         colors="k"
+    #     else:
+    #         colors="#ffffff00"
+
+    #     ax.scatter(
+    #         *mplstereonet.line(abs(inclination_sum), declination_sum),
+    #         c=colors,
+    #         label="Sum",
+    #         edgecolors="k",
+    #         marker="*",
+    #     )
+
     mappable = plt.cm.ScalarMappable(norm, cmap=cmap)
     return mappable
