@@ -7,7 +7,7 @@ Functions for performing the processing and inversion of the microscopy data.
 import numpy as np
 import xarray as xr
 import matplotlib.pyplot as plt
-# import mplstereonet
+import mplstereonet
 import scipy.linalg
 import scipy.io
 import skimage.feature
@@ -562,21 +562,131 @@ def plot_stereonet(dipole_moments, ax=None, cmap="plasma", cmap_norm=plt.Normali
         **kwargs,
     )
 
-    # if add_sum:
-    #     inclination_sum, declination_sum, _ = vector_to_angles(np.sum(dipole_moments, axis=0))
-
-    #     if inclination_sum>=0:
-    #         colors="k"
-    #     else:
-    #         colors="#ffffff00"
-
-    #     ax.scatter(
-    #         *mplstereonet.line(abs(inclination_sum), declination_sum),
-    #         c=colors,
-    #         label="Sum",
-    #         edgecolors="k",
-    #         marker="*",
-    #     )
-
     mappable = plt.cm.ScalarMappable(norm, cmap=cmap)
     return mappable
+
+
+def equal_area_projection(vectors):
+    # norm = np.linalg.norm(vectors, axis=1)
+    # vectors_unitary = vectors / norm[:, np.newaxis]
+    vectors = np.asarray(vectors)
+    vectors_unitary = np.empty_like(vectors)
+    for i in range(vectors.shape[0]):
+        vector = vectors[i]  
+        norm = np.sqrt(np.sum(vector ** 2))
+        vectors_unitary[i] = vector / norm
+    inclinations, declinations, amplitudes = vector_to_angles(vectors)
+
+    # XY_projected = np.zeros((len(vectors), 3))
+    XY_projected = np.empty_like(vectors)
+    for i, projected_vector in enumerate(vectors_unitary):
+        r = np.sqrt(1 - np.abs(vectors_unitary[i, 2])) / np.sqrt(vectors_unitary[i, 0]**2 + vectors_unitary[i, 1]**2)
+        XY_projected[i, 0] = r * vectors_unitary[i, 1]
+        XY_projected[i, 1] = r * vectors_unitary[i, 0]
+        XY_projected[i, 2] = amplitudes[i] if inclinations[i] >= 0 else -amplitudes[i]
+
+    return XY_projected
+
+
+class StereographicProjection:
+    def __init__(self, vectors):
+        self.vectors = vectors
+
+    def plot(self, ax=None, cmap="inferno", cmap_norm=plt.Normalize, vmin=None, vmax=None, 
+             label="", 
+             # s=50, 
+             add_ticks=True, draw_cross=True, add_radial_grid=True, 
+             facecolor="#ffffff00", add_legend=False,
+             **kwargs):
+        """
+        Draw the stereographic projection
+        """
+        if ax is None:
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+
+        # Add a face color
+        background_circle = plt.Circle((0, 0), 1, color=facecolor, zorder=-2)
+        ax.add_artist(background_circle)
+
+        # Draw the great circle
+        circle = plt.Circle((0, 0), 1, color='black', fill=False, zorder=3)
+        ax.add_artist(circle)
+
+        # Define the clipping area
+        clip_path = plt.Circle((0, 0), 1, transform=ax.transData)
+
+        if add_ticks:
+            # Add ticks 
+            ax.text(-0.025, 1.05, '0°')
+            ax.text(-0.05, -1.075, '180°')
+            ax.text(-1.15, -0.025, '270°')
+            ax.text(1.025, -0.025, '90°')
+        
+        if label and not label.endswith(" "):
+            label = label + " "
+            # Draw the central cross if requested
+            if draw_cross:
+                hline = ax.axhline(y=0, color='black', zorder=-1)
+                hline.set_clip_path(clip_path)
+                vline = ax.axvline(x=0, color='black', zorder=-1)
+                vline.set_clip_path(clip_path)
+
+
+        # Draw the radial grid
+        if add_radial_grid:
+            for rad_dec in range(0, 360, 10):  # Grid lines every 10 degrees
+                rad_inc = np.linspace(0, 90, 1000)  # Inclinations from 0 to 90 degrees
+                # rad_int = np.ones_like(rad_inc)  # Constant amplitude for the grid lines
+
+                # Generate the radial vectors
+                radial_vector = angles_to_vector(rad_inc, rad_dec, 1)
+
+                # Project the radial vectors
+                radial_projected = equal_area_projection(radial_vector)
+
+                # Plot each radial grid line
+                ax.plot(radial_projected[:, 1], radial_projected[:, 0], color='gray', zorder=-2, lw=0.5)
+            for circ_inc in range(0, 90, 10):
+                circ_dec = np.linspace(0, 360, 1000)  # Inclinations from 0 to 90 degrees
+                circ_int = np.ones_like(circ_dec)  # Constant amplitude for the grid lines
+
+                # Generate the radial vectors
+                circle_vector = angles_to_vector(circ_inc, circ_dec, circ_int)
+                # Project the radial vectors
+                circle_projected = equal_area_projection(circle_vector)
+
+                # Plot each radial grid line
+                ax.plot(circle_projected[:, 1], circle_projected[:, 0], color='gray', zorder=-2, lw=0.5)
+        
+        # Calculate the equal area projection
+        XY_projected = equal_area_projection(self.vectors)
+
+        # Generate colors based on the amplitude values
+        norm = cmap_norm(vmin=vmin, vmax=vmax)
+        colors = plt.colormaps[cmap](norm(abs(XY_projected[:, 2])))
+
+        # Plotting the data
+        positive_inc = XY_projected[:, 2] > 0
+        scatter_pos = ax.scatter(XY_projected[:, 1][positive_inc], XY_projected[:, 0][positive_inc], 
+                                 c=colors[positive_inc], edgecolors="#333333", label=f"{label}$I > 0$",
+                                **kwargs)
+        scatter_pos.set_clip_path(clip_path)
+
+        scatter_neg = ax.scatter(XY_projected[:, 1][~positive_inc], XY_projected[:, 0][~positive_inc],
+                                 c="#ffffff00", edgecolors=colors[~positive_inc], label=rf"{label}$I \leq 0$",
+                                **kwargs)
+        scatter_neg.set_clip_path(clip_path)
+
+        # Configure the axis
+        ax.set_aspect('equal')
+        ax.set_xticks([])
+        ax.set_yticks([])
+        if add_legend:
+            ax.legend()
+        for spine in ax.spines.values():
+            spine.set_visible(False)
+
+        # Colormap (if necessary)
+        mappable = plt.cm.ScalarMappable(norm=norm, cmap=cmap)
+        return mappable
