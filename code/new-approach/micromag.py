@@ -204,7 +204,9 @@ def _dipole_bu_fast(e, n, u, de, dn, du, dipole_moments, bu):
                 easting_q=de[j],
                 northing_q=dn[j],
                 upward_q=du[j],
-                magnetic_moment=dipole_moments[j, :],
+                magnetic_moment_east=dipole_moments[j, 0],
+                magnetic_moment_north=dipole_moments[j, 1],
+                magnetic_moment_up=dipole_moments[j, 2]
             )
             bu[i] += result
 
