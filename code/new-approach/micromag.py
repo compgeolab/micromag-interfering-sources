@@ -671,7 +671,7 @@ class StereographicProjection:
         # Plotting the data
         positive_inc = XY_projected[:, 2] > 0
         scatter_pos = ax.scatter(XY_projected[:, 1][positive_inc], XY_projected[:, 0][positive_inc], 
-                                 c=colors[positive_inc], edgecolors="#333333", label=f"{label}$I > 0$",
+                                 c=colors[positive_inc], edgecolors="#ffffff00", label=f"{label}$I > 0$",
                                 **kwargs)
         scatter_pos.set_clip_path(clip_path)
 
