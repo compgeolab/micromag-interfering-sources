@@ -1,49 +1,45 @@
-> **CompGeoLab Paper Template:** This is a template used by the lab to generate
-> research papers on GitHub with LaTeX and Jupyter notebooks.
->
-> To use it:
-> 1. Click on the ["Use this template"](https://github.com/compgeolab/paper-template/generate) button to create a new repository with the files from this template.
-> 1. Replace repository name in `environment.yml` and add other packages you may need.
-> 1. Add the information for your paper in this `README.md`.
-> 1. Create the relevant checklist issues using our provided templates.
-> 1. Delete these instructions.
-> 1. Do your science!
->
-> This works particularly well if your co-authors can send and review PRs. If not,
-> connecting the repository to [Overleaf](https://www.overleaf.com) is the most
-> painless way we found to collaborate on the text (but it requires a paid
-> subscription).
-
----
-
-# Paper title
+# Robust directional analysis of magnetic microscopy images using non-linear inversion and iterative Euler deconvolution
 
 by
-Author 1,
-Author 2,
-and [Leonardo Uieda](https://leouieda.com)
+[Gelson F. Souza-Junior](https://orcid.org/0000-0002-5695-4239),
+[Leonardo Uieda](https://orcid.org/0000-0001-6123-9515),
+[Ricardo I. F. Trindade](https://orcid.org/0000-0001-9848-9550),
+[Roger R. Fu](https://orcid.org/0000-0003-3635-2676),
+[Ualisson D. Bellon](https://orcid.org/0000-0002-4599-6548),
+[Yago M. Castro](https://orcid.org/0009-0003-3884-9675).
 
 This repository contains the data and source code used to produce the results
 presented in:
 
-> Reference of the paper and/or preprint.
+> Souza-Junior, G. F., Uieda, L., Trindade, R. I. F., Fu, R. R., Bellon, U. D.,
+> and Castro, Y. M. (2025). Robust directional analysis of magnetic microscopy
+> images using non-linear inversion and iterative Euler deconvolution.
+> EarthArXiv. doi:[TO_BE_DETERMINED](https://doi.org/TO_BE_DETERMINED)
 
 |  | Info |
 |-:|:-----|
 | Version of record | https://doi.org/JOURNAL_DOI |
-| Open-access version on EarthArXiv | https://doi.org/EARTHARXIV_DOI |
+| Open-access preprint on EarthArXiv | https://doi.org/EARTHARXIV_DOI |
 | Archive of this repository | https://doi.org/FIGSHARE_ZENODO_DOI |
 | Reproducing our results | [`REPRODUCING.md`](REPRODUCING.md) |
 
-## About
-
-A little bit about this paper, how it came about, and what are the main
-contributions. Also include a summary figure or graphical abstract for this
-paper.
-
 ## Abstract
 
-The paper abstract. Paste it here once it's written.
+Scientists often study entire samples to understand their overall properties,
+but this approach can miss important details. To get a clearer picture,
+researchers are improving methods that focus on smaller regions of a sample. In
+paleomagnetism, a field that studies the Earth's ancient magnetic field,
+magnetic microscopy allows scientists to examine tiny areas with high
+precision. In this study, we use magnetic microscopy data to determine the
+direction of magnetization in samples. To do this, we apply a mathematical
+method called Euler deconvolution, which helps solve complex calculations and
+reduce uncertainty. We also refine our results with an additional step that
+improves accuracy and removes unwanted signals. We tested this approach on both
+simulated and real data. Our results show that this new method can detect
+weaker magnetic sources and accurately determine the direction of
+magnetization. When applied to real samples, it successfully identified their
+original magnetic direction. This represents an important step in using
+magnetic microscopy for paleomagnetic research.
 
 ## License
 
