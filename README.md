@@ -20,7 +20,7 @@ presented in:
 |-:|:-----|
 | Version of record | https://doi.org/JOURNAL_DOI |
 | Open-access preprint on EarthArXiv | https://doi.org/10.31223/X5N42F |
-| Archive of this repository | https://doi.org/10.6084/m9.figshare.28560872 |
+| Archive of this repository | https://doi.org/10.5281/zenodo.15132658 |
 | Reproducing our results | [`REPRODUCING.md`](REPRODUCING.md) |
 
 ## Abstract
