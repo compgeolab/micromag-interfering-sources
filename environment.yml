@@ -25,3 +25,6 @@ dependencies:
   - verde
   - harmonica
   - choclo
+  - pip:
+    - h5netcdf
+
