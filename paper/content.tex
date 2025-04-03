@@ -11,7 +11,7 @@ Another way to incorporate additional information to the inverse problem without
 We propose modifications to the methodology of \citet{Souza-Junior2024} to improve its accuracy in scenarios where signals from neighboring particles overlap, causing distortions in the signal of the weaker particles and biasing the source detection and dipole moment inversion results (as shown in Figure~\ref{method-redetection}a). The new method uses the following workflow:
 
 \begin{enumerate}
-    \item \textbf{Source detection:} We use the same procedure described in \citet{Souza-Junior2024}, namely calculating the total-gradient amplitude of the magnetic data, histogram stretching, and a blob detection algorithm. This produces a set of data windows that contain the observed signals of individual particles. 
+    \item \textbf{Source detection:} We use the same procedure described in \citet{Souza-Junior2024}, namely calculating the total-gradient amplitude of the magnetic data, histogram stretching, and a blob detection algorithm. This produces a set of data windows that contain the observed signals of individual particles.
     \label{alg:workflow-detection}
     \item \textbf{Sort the data windows} by order of decreasing signal strength and perform the following steps on each window following this order:
     \label{alg:workflow-loop}
@@ -20,7 +20,7 @@ We propose modifications to the methodology of \citet{Souza-Junior2024} to impro
         \item {Euler:}
         \item \textbf{Linear magnetic moment inversion:} Perform a linear inversion to estimate the dipole moment of the source using the Euler deconvolution solution as prior information to fix the source position.
         \item \textbf{Non-linear inversion:} Unlike \citet{Souza-Junior2024}, we then refine the position and dipole moment estimates by a non-linear inversion using the Nelder-Mead method \citep{Nelder-Mead1965,Gao2010}. The Euler deconvolution and linear inversion results are used as initial estimates for the optimization.
-        \item \textbf{Signal removal:} Forward model the magnetic field of the estimated dipole from the previous step and remove the signal from the full magnetic data. 
+        \item \textbf{Signal removal:} Forward model the magnetic field of the estimated dipole from the previous step and remove the signal from the full magnetic data.
     \end{enumerate}
     \item Now, the original magnetic data has been stripped of the signal of all detected sources. Repeat steps~\ref{alg:workflow-detection} and \ref{alg:workflow-loop} on the stripped dataset to detect new sources and determine their positions and dipole moments.
 \end{enumerate}
@@ -31,7 +31,7 @@ Below, we describe these steps in more detail.
 \subsection{Position estimation}
     Euler deconvolution (ED) \citep{Reid1990} is a procedure widely applied in aeromagnetic surveys \citep{Barbosa2011, Melo2013} to obtain a 3D position estimation of the magnetic source. The only assumption is the source's shape given by the structural index ($\eta$).
     In the case of a dipole $\eta = 3$. Euler deconvolution is based on Euler's homogeneity equation
-    
+
         \begin{equation}
         \label{eq_euler_homogeneity}
         (x - x_c)\partial_x f
@@ -40,20 +40,20 @@ Below, we describe these steps in more detail.
         = (b - f)\eta
         \ ,
         \end{equation}
-    
+
     \noindent
     in which $(x, y, z)$ are the observation point coordinates in a Cartesian system, $(x_c, y_c, z_c)$ are the coordinates of the source, $b$ is a constant shift in the data called the \textit{base level}, $\eta$ is the structural index, and $f$ is the magnetic field.
-    The equation above can be rearranged to isolate the unknown source position  and the base level 
-    
+    The equation above can be rearranged to isolate the unknown source position  and the base level
+
     \begin{equation}
     x_c \partial_x f + y_c \partial_y f + z_c \partial_z f + \eta b
     =
     x \partial_x f + y \partial_y f + z \partial_z f + \eta f
     \ .
     \end{equation}
-    
+
     Given $N$ observation of the magnetic field and its $x$-, $y$-, and $z$-derivatives, we can form a $N \times 4$ system of equations
-    
+
     \begin{equation}
     {\overbrace{
     \begin{bmatrix}
@@ -82,20 +82,20 @@ Below, we describe these steps in more detail.
 
     \noindent
     in which $\mathbf{G}$ is the Jacobian matrix, $\mathbf{p}$ is the parameter vector, and $\mathbf{h}$ is the pseudo-data vector.
-    
+
     The least-squares solution of this linear system is defined by the vector $\mathbf{p}$ that minimizes the misfit function, $\phi(\mathbf{p})$, given by the sum of the squared differences between the observed pseudo-data vector $\mathbf{h}^o$ and the predicted pseudo-data vector $\mathbf{h}$
-    
+
     \begin{equation}
     \label{function_phi}
-    \phi(\mathbf{p}) 
-    = \| \mathbf{h}^o - \mathbf{h} \|_2^2\ 
+    \phi(\mathbf{p})
+    = \| \mathbf{h}^o - \mathbf{h} \|_2^2\
     = \| \mathbf{h}^o - \mathbf{G}\mathbf{p} \|_2^2\
     \ .
     \end{equation}
-    
+
     \noindent
     The solution that minimizes the misfit function is
-    
+
     \begin{equation}
     \label{euler_solution}
     \mathbf{p} = \left(\mathbf{G}^T \mathbf{G}\right)^{-1} \mathbf{G}^T \mathbf{h}^o\ .
@@ -103,9 +103,9 @@ Below, we describe these steps in more detail.
 
     \noindent
     The parameter vector $\mathbf{p}$ contains the coordinates of the dipolar source $(x_c, y_c, z_c)$, as well as the base level $b$, which is the background field within the data window.
-    
+
 \subsection{Linear magnetic moment inversion}
-  
+
      Following \citet{Oliveira2015Estimation} and \citet{Souza-Junior2024}, the vertical component of the magnetic field $f_z$ has a linear relationship with the dipole moment components $(m_x, m_y, m_z)$ given by the following matrix equation
 
      \begin{equation}
@@ -147,7 +147,7 @@ Below, we describe these steps in more detail.
 
     \noindent
     in which $r_i = \sqrt{(x_i - x_c)^2 + (y_i - y_c)^2 + (z_i - z_c)^2}$ is the distance between the observation point $(x_i, y_i, z_i)$ and the dipolar source $(x_c, y_c, z_c)$, $\mu_0$ is the vacuum magnetic permeability, matrix $\mathbf{A}$ is the Jacobian matrix, vector $\mathbf{m}$ is the parameter vector containing the dipole moment components, and $\mathbf{d}$ is the predicted data vector. The second-order derivative terms in Equation~\ref{eq_dipole_bz} are
-    
+
     \begin{equation}
     \begin{aligned}
     \dfrac{\partial^2}{\partial z \partial x} \dfrac{1}{r_i} &=
@@ -162,18 +162,18 @@ Below, we describe these steps in more detail.
     \end{equation}
 
     The least-squares solution to the linear system in  Equation~\ref{eq_dipole_bz} is the parameter vector $\mathbf{m}$ that minimizes the misfit function $\psi(\mathbf{m})$, which is given by the sum of the squared differences between the observed  $\mathbf{d}^o$ and predicted $\mathbf{d}$ data vectors
-   
+
     \begin{equation}
     \label{psi_function}
-    \psi(\mathbf{m}) 
+    \psi(\mathbf{m})
     = \min_{\mathbf{m}} \| (\mathbf{d}^o - b) - \mathbf{d} \|_2^2
-    = \| (\mathbf{d}^o - b) - \mathbf{A}\mathbf{m} \|_2^2\ 
+    = \| (\mathbf{d}^o - b) - \mathbf{A}\mathbf{m} \|_2^2\
     \ .
     \end{equation}
 
     \noindent
     The background field $b$ estimated by Euler deconvolution is removed from the observed data to account for static shifts in the microscopy data which cannot be replicated by a dipolar field.
-    
+
     The parameter vector $\mathbf{m}$, containing the Cartesian components of the magnetic moment, that minimizes the misfit function $\psi$ is
 
     \begin{equation}
@@ -181,83 +181,83 @@ Below, we describe these steps in more detail.
     \mathbf{m} = \left(\mathbf{A}^T \mathbf{A}\right)^{-1} \mathbf{A}^T (\mathbf{d}^o - b)\ .
     \end{equation}
 
-        
-\subsection{Non-linear inversion} 
 
-    The presence of signals from interfering sources in the current data window can cause biases in the Euler deconvolution position estimate \citep{Uieda2025}, which in turn are propagated to the estimated dipole moment by linear inversion. 
-    To help mitigate this interference, we employ a non-linear inversion to estimate the dipole moment and source position simultaneously. 
-    
-     After obtaining the estimates of the 3D position $\mathbf{x} = [x_{c}\ y_{c}\ z_{c}]^T$ from Euler deconvolution and the dipole moment vector $\mathbf{m} = [m_{x}\ m_{y}\ m_{z}]^T$ from the linear inversion, we formulate a new non-linear misfit function $\xi(\mathbf{x}, \mathbf{m})$ 
-     
+\subsection{Non-linear inversion}
+
+    The presence of signals from interfering sources in the current data window can cause biases in the Euler deconvolution position estimate \citep{Uieda2025}, which in turn are propagated to the estimated dipole moment by linear inversion.
+    To help mitigate this interference, we employ a non-linear inversion to estimate the dipole moment and source position simultaneously.
+
+     After obtaining the estimates of the 3D position $\mathbf{x} = [x_{c}\ y_{c}\ z_{c}]^T$ from Euler deconvolution and the dipole moment vector $\mathbf{m} = [m_{x}\ m_{y}\ m_{z}]^T$ from the linear inversion, we formulate a new non-linear misfit function $\xi(\mathbf{x}, \mathbf{m})$
+
     \begin{equation}
     \label{misfit_equation}
-    \xi(\mathbf{x}, \mathbf{m}) = 
+    \xi(\mathbf{x}, \mathbf{m}) =
     \| (\mathbf{d}^o - b) - \mathbf{d}(\mathbf{x}, \mathbf{m}) \|_2^2.
-    \end{equation} 
+    \end{equation}
 
     \noindent
-    in which $\mathbf{d}(\mathbf{x}, \mathbf{m})$ is the forward model from Equation~\ref{eq_dipole_bz}. 
+    in which $\mathbf{d}(\mathbf{x}, \mathbf{m})$ is the forward model from Equation~\ref{eq_dipole_bz}.
 
-    The solutions $\mathbf{x}$  and $\mathbf{m}$ that minimize the misfit function above can be estimated through a non-linear optimization method. 
-    Here, we use the Nelder-Mead method \citep{Nelder-Mead1965,Gao2010} with initial estimates of $\mathbf{x}$ and $\mathbf{m}$ from Euler deconvolution and the linear dipole moment inversion, respectively.    
-     The Nelder-Mead method is a gradient-free optimization technique, which systematically searches the optimal solution of Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space \citep{Nelder-Mead1965}. This is particularly useful for optimizing functions where gradients are difficult or impractical to compute. 
-     
+    The solutions $\mathbf{x}$  and $\mathbf{m}$ that minimize the misfit function above can be estimated through a non-linear optimization method.
+    Here, we use the Nelder-Mead method \citep{Nelder-Mead1965,Gao2010} with initial estimates of $\mathbf{x}$ and $\mathbf{m}$ from Euler deconvolution and the linear dipole moment inversion, respectively.
+     The Nelder-Mead method is a gradient-free optimization technique, which systematically searches the optimal solution of Equation~\ref{misfit_equation} by iteratively adjusting a simplex in the parameter space \citep{Nelder-Mead1965}. This is particularly useful for optimizing functions where gradients are difficult or impractical to compute.
+
      However, the substantial difference of up to seven orders of magnitude between the position and the magnetic moment poses a challenge. This dissimilarity directly affects the simplex operations and can prevent the algorithm from converging. We address this problem by normalizing the magnetic moment by the magnitude of the initial estimate
-     
+
     \begin{align}
     \label{normalizing_m_parameters}
     m_0 &= \sqrt{{m_x}_0^2+{m_y}_0^2+{m_z}_0^2}\ ,
-    & {m_x}^{j+1} &= \frac{{m_x}^{j}}{m_0}, 
-    & {m_y}^{j+1} &= \frac{{m_y}^{j}}{m_0}, 
-    & \text{and} & 
+    & {m_x}^{j+1} &= \frac{{m_x}^{j}}{m_0},
+    & {m_y}^{j+1} &= \frac{{m_y}^{j}}{m_0},
+    & \text{and} &
     & {m_z}^{j+1} &= \frac{{m_z}^{j}}{m_0}
     \ .
     \end{align}
-     
+
 \noindent
 Which was also applied for the position vector using the initial position estimates:
 
 \begin{align}
 \label{normalizing_h_parameters}
-{x_c}^{j+1} &= \frac{{x_c}^{j}}{{x_c}_0}, 
-& {y_c}^{j+1} &= \frac{{y_c}^{j}}{{y_c}_0}, 
-& \text{and} & 
+{x_c}^{j+1} &= \frac{{x_c}^{j}}{{x_c}_0},
+& {y_c}^{j+1} &= \frac{{y_c}^{j}}{{y_c}_0},
+& \text{and} &
 &{z_c}^{j+1} &= \frac{{z_c}^{j}}{{z_c}_0}
 \ .
 \end{align}
 
 \noindent
 These normalization procedures ensure that each parameter falls within a unit range for a given number M of iterations of the simplex optimization, $j = 1,2,..., M$.
-     
+
 
 \subsection{Signal removal}
 \label{sec:signal_removal}
 
     A logical route to account for mutual interference between magnetic sources would be solving the magnetic moment for the whole of the sources at the same time. However, this approach raises three main concerns:
-    
+
     \begin{enumerate}
         \item \textbf{The size of the problem:} A linear problem $N \times 3L$ ($N$ being the number of observed data points and $L$ the number of sources) would be obtained in Equation~\ref{eq_dipole_bz}. This poses a problem because the magnetic microscopy data includes a large number of observation points and potentially encompassing hundreds to thousands of identified sources. Therefore, working with sliced windowed data requires less computational resources.
-        
+
         \item \textbf{Background field correction:} In the proposed methodology, correction for the background field ($b$) eliminates the need for preprocessing the data for regional-residual separation to remove the effects of shifts in the magnetic data. This application is feasible because $b$ is also provided by the ED solution when using windowed data. Simultaneous inversion of all sources would require the removal of the regional field prior to inversion, which is difficult to do without biasing the estimated directions.
-        
+
         \item \textbf{No visible advantage over windowed data}: Tests with synthetic data \citep[see supplementary Jupyter notebooks in][]{figshare} showed no significant advantage over windowed data. The latter performed significantly better in the benchmark and had lower processing times.
 
     \end{enumerate}
-    
-    Considering the above, a sequential subtraction of the magnetic carriers' influence is proposed to maintain the window-based approach. The magnetic signal associated with each identified source was computed using a dipole forward model (Equation~\ref{eq_dipole_bz}) and the estimated parameter vector. The forward-modeled signal of a stronger source was then selectively removed from the dataset, resulting in a dataset devoid of its influence at the current step. 
+
+    Considering the above, a sequential subtraction of the magnetic carriers' influence is proposed to maintain the window-based approach. The magnetic signal associated with each identified source was computed using a dipole forward model (Equation~\ref{eq_dipole_bz}) and the estimated parameter vector. The forward-modeled signal of a stronger source was then selectively removed from the dataset, resulting in a dataset devoid of its influence at the current step.
     This is similar to the \texttt{subtract\_source} routine in the QDMlab software \citep{Volk2022}. This process allowed for the gradual isolation of weaker sources' contributions. The updated dataset was also used to recalculate the directional derivatives for the subsequent Euler deconvolution position estimation.
 
     This step-by-step procedure is subsequently employed for all detected particles in the sample, from the strongest magnetic signals to the weakest. This led to an improved position estimation compared to the original methodology of \citep{Souza-Junior2024}. This novel methodology, designed to mitigate the impact of stronger sources and with a better estimation of positions, significantly enhances the precision of subsequent inversion analyses. However, a trade-off between achieving better results and incurring longer computational runtime is unavoidable.
 
 \subsection{Residual anomaly detection}
 
-   The magnetic moment of a material is directly proportional to its volume. In a rock fabric, this can result in a wide range of particle diameter distributions, from small, stable recording grains (single domain, SD, e.g. around 60 nm for magnetite) to less reliable magnetic carriers (multi-domain, MD, greater than 1000 nm for the same mineral) \citep{Nagy2019}. This results in a significant contrast in the magnetic signal measured using the magnetic microscope. This effect is evident in the synthetic example shown in Figure~\ref{method-redetection}a, which features dipolar sources with a magnetic moment contrast spanning 5 orders of magnitude. 
-   
+   The magnetic moment of a material is directly proportional to its volume. In a rock fabric, this can result in a wide range of particle diameter distributions, from small, stable recording grains (single domain, SD, e.g. around 60 nm for magnetite) to less reliable magnetic carriers (multi-domain, MD, greater than 1000 nm for the same mineral) \citep{Nagy2019}. This results in a significant contrast in the magnetic signal measured using the magnetic microscope. This effect is evident in the synthetic example shown in Figure~\ref{method-redetection}a, which features dipolar sources with a magnetic moment contrast spanning 5 orders of magnitude.
+
     In the original methodology \citep{Souza-Junior2024}, sources are initially identified for window selection using a total gradient anomaly (TGA) map, with contrast stretched to highlight sources of varying intensities (both strong and weak) as shown in Figure~\ref{method-redetection}b. However, due to the high signal contrast, this approach proved insufficient for identifying all relevant sources. To address this issue, the procedure outlined in Section~\ref{sec:signal_removal} was implemented to obtain a residual anomaly map. Reapplying the source detection algorithm to this new map enabled the identification of weaker sources (Figure~\ref{method-redetection}c), as the signal from stronger sources was effectively removed. This improvement resulted from the reduced disparity between the signals of weaker magnetic sources and the residual anomalies from each window inversion.
 
     \begin{figure}[tb!]
       \centering
-      \includegraphics[width=1\linewidth]{paper/figures/re-detection-methodology.png}
+      \includegraphics[width=1\linewidth]{figures/re-detection-methodology.png}
       \caption{Source detection workflow on the residual anomaly. a) Synthetic sample featuring a wide range of magnetic moment intensities. b) The Blob detection algorithm identify the sources by using the total gradient obtained with the vertical component of the magnetic field. c) Result of the blob detection algorithm when applied to the total gradient of the residual anomaly.}
       \label{method-redetection}
     \end{figure}
@@ -265,13 +265,13 @@ These normalization procedures ensure that each parameter falls within a unit ra
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Numerical simulations}
 
-In this section, we evaluate the effectiveness of the interfering sources method, in comparison with the method proposed by \citet{Souza-Junior2024}, by applying it to two synthetic datasets. The tests are structured as follows:  
+In this section, we evaluate the effectiveness of the interfering sources method, in comparison with the method proposed by \citet{Souza-Junior2024}, by applying it to two synthetic datasets. The tests are structured as follows:
 
 \begin{enumerate}
     \item \textbf{Evaluating overlapping signal detection:} This test simulates a single map containing both strong and weak sources to evaluate the the new methodology's effectiveness in discerning and accurately locating the weaker sources, despite the interferences causing by the stronger ones.
-        
+
     \item \textbf{Assessing performance with variable particle density:} This test introduces a more complex scenario by simulating a specific magnetization direction for the magnetic sources. Additionally, three different particle density scenarios are modeled to test whether the method can reliably recover the magnetization direction across all cases.
-        
+
 \end{enumerate}
 
 \subsection{Evaluating overlapping signal detection}
@@ -286,7 +286,7 @@ The synthetic data inversion was resolved using both the standard method \citep{
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/euler-comparion-synthetic.png}
+  \includegraphics[width=1\linewidth]{figures/euler-comparion-synthetic.png}
   \caption{
     Position estimation for the overlapping signals synthetic sample. (a) Initial detection window data for each magnetic source (black squares) and re-detection provided by the iterative solution (green squares). These data windows were used for the 3D position estimation of magnetic sources (colored circles) in the standard (b) and iterative (c) methodologies. Newly detected sources in the iterative method are represented as colored squares in panel (c).
   }
@@ -298,7 +298,7 @@ The iterative Euler estimated positions were used in the iterative magnetic inve
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/synthetic-data-stereograms-comparison.png}
+  \includegraphics[width=1\linewidth]{figures/synthetic-data-stereograms-comparison.png}
   \caption{
     Comparison of true and estimated dipole magnetic moments and directions for the overlapping signals in the synthetic sample. Panel (a) shows the true modeled direction, while panels (b) and (c) display the estimated vector directions obtained using the standard ($M = 112$) and iterative ($M = 166$) methods, respectively. Results for both methods were filtered based on the coefficient of determination ($R^2 \geq 0.9$). Directions are hued by magnitude of their magnetic moments. Open/closed circles indicate positive/negative inclinations.
   }
@@ -313,7 +313,7 @@ To evaluate the influence of particle density on the simulation results, we cons
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1.0\linewidth]{paper/figures/synthetic-different-densities-maps.png}
+  \includegraphics[width=1.0\linewidth]{figures/synthetic-different-densities-maps.png}
   \caption{
 Vertical component (\(b_z\)) magnetic data from synthetic grain distributions used to evaluate the influence of particle density on the simulation. Panel (a) shows an example with \(N = 500\), highlighting a low-density distribution of grains. Panel (b) illustrates the distribution for \(N = 1000\), presenting a moderate density of grains. Panel (c) displays the distribution for \(N = 2500\), showing a high-density grain arrangement.
   }
@@ -331,7 +331,7 @@ The results reveal a clear difference in the performance of the standard (red cu
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1.0\linewidth]{paper/figures/synthetic-different-densities-stereoplot.png}
+  \includegraphics[width=1.0\linewidth]{figures/synthetic-different-densities-stereoplot.png}
   \caption{
 Comparison of the magnetic directions obtained using the original (red line and left stereogram) and the iterative (blue line and right stereogram) methods on each synthetic grain distributions simulation. Panel (a) shows the angular misfit between the cumulative vector and the measured magnetic direction for the low-density distribution. Panel (b) illustrates the angular misfit for the moderate-density distribution. Finally, panel (c) presents the results for high-density distribution. The stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for each density are also shown, with modeled bias direction (star) and the cumulative direction (square) indicated. The color gradient represents the logarithmic scale of particle counts, with warmer colors indicating higher particle concentrations.
   }
@@ -341,7 +341,7 @@ Comparison of the magnetic directions obtained using the original (red line and 
 
 \section{Real data applications}
 
-After demonstrating the applicability of the new methodology through the numerical simulations, we applied it to real MM data. The magnetic particles \citep[most commonly magnetite,][]{OReilly1984} acquire TRM as they cool below their Curie temperature, with the magnetization direction becoming "locked in" upon reaching the blocking temperature \citep{Dunlop1997}. When grains are sufficiently small and exhibit homogeneous, unidirectional magnetization (single domain, SD), the acquisition and preservation of magnetic signals are physically described by Néel’s theory \citep{Neel1949, Neel1955}. This allows them to retain remanent magnetization for billions of years, making them excellent recorders of the paleomagnetic field. In addition to SD particles, pseudo-single domain (PSD) particles—characterized by flower and vortex states—are also stable and can preserve magnetization for timescales comparable to the age of the Solar System \citep{Nagy2017, Lascu2018,Bellon-2024a}. Conversely, Néel’s theory does not apply to larger particles (multidomain, MD), which have unstable remanent magnetization \citep[e.g., due to viscous domain reorganization,][]{DeGroot2014}, limiting their capacity to reliably record the geomagnetic field. 
+After demonstrating the applicability of the new methodology through the numerical simulations, we applied it to real MM data. The magnetic particles \citep[most commonly magnetite,][]{OReilly1984} acquire TRM as they cool below their Curie temperature, with the magnetization direction becoming "locked in" upon reaching the blocking temperature \citep{Dunlop1997}. When grains are sufficiently small and exhibit homogeneous, unidirectional magnetization (single domain, SD), the acquisition and preservation of magnetic signals are physically described by Néel’s theory \citep{Neel1949, Neel1955}. This allows them to retain remanent magnetization for billions of years, making them excellent recorders of the paleomagnetic field. In addition to SD particles, pseudo-single domain (PSD) particles—characterized by flower and vortex states—are also stable and can preserve magnetization for timescales comparable to the age of the Solar System \citep{Nagy2017, Lascu2018,Bellon-2024a}. Conversely, Néel’s theory does not apply to larger particles (multidomain, MD), which have unstable remanent magnetization \citep[e.g., due to viscous domain reorganization,][]{DeGroot2014}, limiting their capacity to reliably record the geomagnetic field.
 
 In this section, we worked with two distinct samples. The NRM of these samples was measured using the 2G RAPID Superconducting Rock Magnetometer at the Harvard Paleomagnetics Lab, Department of Earth and Planetary Sciences, Harvard University. As a result, the measurements encompass both the primary TRM and any possible viscous components acquired through the natural magnetic relaxation of some particles. Additionally, to ensure consistency between the magnetometer measurements, which were taken vertically, and the maps produced with the QDM, it was necessary to apply a 90-degree clockwise rotation around the \textit{x}-axis to the vertical measurements. This rotation ensures that both measurements are in the same reference frame.
 
@@ -355,7 +355,7 @@ The samples we used provide test to:
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/real-data-maps.png}
+  \includegraphics[width=1\linewidth]{figures/real-data-maps.png}
   \caption{
    LED picture (left) and vertical component (\(b_z\), right) magnetic data from real samples observed at \(z = 5\) µm. Panel (a) shows an example from the ceramic tile sample, highlighting its key characteristics, including the presence of isolated dipolar particle signals and clusters related to larger particles. Panel (b) presents an example from the basaltic sample, displaying two main occurrences of magnetic signals: the first is a high density of signals distributed within the matrix, and the second appears as inclusions in plagioclase phenocrysts.
   }
@@ -378,7 +378,7 @@ The second hypothesis involves human-induced errors during the measurement proce
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/ceramic-data-stereoplot.png}
+  \includegraphics[width=1\linewidth]{figures/ceramic-data-stereoplot.png}
   \caption{
   Comparison of the standard (red) and iterative (blue) algorithms in reconstructing the NRM direction from the ceramic sample. (Left) Angular misfit between the cumulative vector and the measured NRM as a function of the number of particles ($N$). (Right) Stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for both methods, with the measured NRM (star), non-filtered cumulative direction (triangle), and the filtered cumulative direction (square) indicated. The color gradient denotes the logarithmic scale of particle counts, with warmer colors representing higher concentrations. The solid-lined and dashed-lined curves represent the non-filtered and outliers filtered data, respectively.
   }
@@ -392,11 +392,11 @@ In order to apply our method to a more magnetically complex sample, we have chos
 
 The acquisition of QDM data was essentially the same as the aforementioned experiment with the ceramic tile. The QDM scans were performed to capture the magnetic field distribution at high spatial resolution. To better compare the results with the tile sample, the same number of randomized mapping spots was performed. Figure~\ref{real-data-maps}b shows one example of the maps obtained. The resulting data enabled the calculation of angular misfit as a function of the number of particles, providing insight into the reliability of different analytical methods.
 
-The results reveal a clear difference in the performance of the standard and iterative methods in reconstructing the NRM direction. As shown in Figure~\ref{basalt-data-stereograms}, the iterative method consistently achieves lower angular misfit values, before and after the intensity filtering, as more particles are incorporated, demonstrating improved accuracy and stability. In contrast, while the standard method also reduces the misfit over time, especially after the filtering, it stabilizes around 5 degrees only after approximately a thousand grains. The stereographic projections further illustrate these differences. The standard method exhibits a wider spread of vectors, suggesting that many individual particle contributions remain misaligned. Meanwhile, the iterative method results in a more tightly clustered distribution, with the misfit tending toward zero as the number of particles increases (although there is also, seemingly, a stagnation threshold). This suggests that the iterative approach is more effective in refining the directional signal, leading to greater precision in the reconstructed magnetization. 
+The results reveal a clear difference in the performance of the standard and iterative methods in reconstructing the NRM direction. As shown in Figure~\ref{basalt-data-stereograms}, the iterative method consistently achieves lower angular misfit values, before and after the intensity filtering, as more particles are incorporated, demonstrating improved accuracy and stability. In contrast, while the standard method also reduces the misfit over time, especially after the filtering, it stabilizes around 5 degrees only after approximately a thousand grains. The stereographic projections further illustrate these differences. The standard method exhibits a wider spread of vectors, suggesting that many individual particle contributions remain misaligned. Meanwhile, the iterative method results in a more tightly clustered distribution, with the misfit tending toward zero as the number of particles increases (although there is also, seemingly, a stagnation threshold). This suggests that the iterative approach is more effective in refining the directional signal, leading to greater precision in the reconstructed magnetization.
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/basalt-data-stereoplot.png}
+  \includegraphics[width=1\linewidth]{figures/basalt-data-stereoplot.png}
   \caption{
   Comparison of the standard (red) and iterative (blue) algorithms in reconstructing the NRM direction from the basalt sample. (Left) Angular misfit between the cumulative vector and the measured NRM as a function of the number of particles ($N$). (Right) Stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for both methods, with the measured NRM (star), non-filtered cumulative direction (triangle), and the filtered cumulative direction (square) indicated. The color gradient denotes the logarithmic scale of particle counts, with warmer colors representing higher concentrations. The solid-lined and dashed-lined curves represent the non-filtered and outliers filtered data, respectively.
   }
@@ -406,7 +406,7 @@ The results reveal a clear difference in the performance of the standard and ite
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Discussion}
 
-Inverting unique magnetic moment from MM data, regardless of the technique, demands knowing the position of sources. The application of the Euler deconvolution technique emerges to avoid additional measurements, such as nano-tomography, to uncover that information. The isolated windows approach, as justified by \cite{Souza-Junior2024}, enables the separation of the primary signal from the surrounding area using the total gradient anomaly. This method effectively isolates the desired signal while excluding regions outside the window boundaries, which are less sensitive to variations in the magnetic parameters of the specific source. Using this windows approach enables a rapid solution to the inversion problem while keeping it largely overdetermined, since only three parameters are solved per sliced data. However, this thresholding exclusion of the area from the inversion domain violates the basic theory of inversion, which demands that the entire system be considered, ensuring that the interactions between all sources are properly accounted for to obtain a unique and precise solution \citep{Baratchart2013, Lima2013}. Thus, the previous approach of \cite{Souza-Junior2024} will not yield reliable results in all cases. Specifically, in cases influenced by distant sources, even those that are weak, either within the window or close by, which compromises its effectiveness. The latter reflects on a higher amount of results discarded by the filtering criterion. 
+Inverting unique magnetic moment from MM data, regardless of the technique, demands knowing the position of sources. The application of the Euler deconvolution technique emerges to avoid additional measurements, such as nano-tomography, to uncover that information. The isolated windows approach, as justified by \cite{Souza-Junior2024}, enables the separation of the primary signal from the surrounding area using the total gradient anomaly. This method effectively isolates the desired signal while excluding regions outside the window boundaries, which are less sensitive to variations in the magnetic parameters of the specific source. Using this windows approach enables a rapid solution to the inversion problem while keeping it largely overdetermined, since only three parameters are solved per sliced data. However, this thresholding exclusion of the area from the inversion domain violates the basic theory of inversion, which demands that the entire system be considered, ensuring that the interactions between all sources are properly accounted for to obtain a unique and precise solution \citep{Baratchart2013, Lima2013}. Thus, the previous approach of \cite{Souza-Junior2024} will not yield reliable results in all cases. Specifically, in cases influenced by distant sources, even those that are weak, either within the window or close by, which compromises its effectiveness. The latter reflects on a higher amount of results discarded by the filtering criterion.
 
 To tackle these challenges, the iterative method was introduced, providing a more reliable solution for mitigating interference between sources while still preserving the isolated windows approach. Naturally, this comes at the cost of increased inversion time, but the method remains efficient enough to run on a personal computer without demanding massive computational power. Despite the improvements, not all problems have been solved. The new method is more effective at detecting particles and results in more particles passing through the filtering criteria. However, it still faces challenges with inherent limitations of the Euler deconvolution, such as clustered signals. This introduces position estimation errors that are directly influenced by the particle's magnetic signal strength. In particular, errors in vertical position estimation lead to a compensatory trade-off between this positional uncertainty and the recovered dipole intensity. For this reason, our focus here is on the directional aspects of the dataset, while the intensity aspect will require more complex future experiments, along with the implementation of a more refined approach to solving Euler's homogeneity equation, as proposed by \citet{Uieda2025}.
 
