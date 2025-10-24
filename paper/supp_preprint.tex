@@ -8,43 +8,36 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set a class and general configuration
-\documentclass[onecolumn,10pt,a4paper]{article}
+\documentclass[onecolumn,10pt]{article}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Set variables with the title, authors, etc.
-\newcommand{\Title}{Robust directional analysis of magnetic microscopy images using non-linear inversion and iterative Euler deconvolution}
-\newcommand{\TitleShort}{A robust iterative method for magnetic microscopy inversion}
+\newcommand{\Title}{Supplementary files}
+\newcommand{\TitleShort}{A short title}
 
-\newcommand{\Year}{2025}
-\newcommand{\SubmittedOn}{2025/03/28}
+\newcommand{\Year}{2023}
+\newcommand{\SubmittedOn}{2023/02/28}
 \newcommand{\PublishedOn}{2023/02/28}
 
-\newcommand{\AuthorShort}{Souza-Junior \textit{et al.}}
+\newcommand{\AuthorShort}{Uieda \textit{et al.}}
 \newcommand{\Authors}{%
-  Gelson F. Souza-Junior\textsuperscript{1,2},
   Leonardo Uieda\textsuperscript{1},
-  Ricardo I. F. Trindade\textsuperscript{1},
-  Roger R. Fu\textsuperscript{2},
-  Ualisson D. Bellon\textsuperscript{3}
-  and
-  Yago M. Castro\textsuperscript{1}
+  Santiago R. Soler\textsuperscript{2}
 }
-% \newcommand{\Email}{gelson.ferreira@usp.br}
-\newcommand{\Email}{gferreiradesouzajunior@fas.harvard.edu}
+\newcommand{\Email}{contact-email@university.org}
 \newcommand{\Corresponding}{%
-  Corresponding author: Gelson F. Souza-Junior <\href{mailto:\Email}{\Email}>
+  Corresponding author: Leonardo Uieda <\href{mailto:\Email}{\Email}>
 }
 \newcommand{\Affiliations}{%
   \textsuperscript{1} Universidade de São Paulo, Brazil;
-  \textsuperscript{2} Harvard University, USA;
-  \textsuperscript{3} University of Edinburgh, UK.
+  \textsuperscript{2} University of British Columbia, Canada;
 }
 
 \newcommand{\Journal}{Geochemistry, Geophysics, Geosystems}
 \newcommand{\JournalDOI}{YYYYY/YYYYYYY}
 \newcommand{\PreprintDOI}{XXXXX/XXXXXXX}
-\newcommand{\ArchiveDOI}{10.6084/m9.figshare.28560872}
-\newcommand{\GitHubRepository}{compgeolab/micromag-interfering-sources}
+\newcommand{\ArchiveDOI}{DOI_FOR_THE_REPO_ARCHIVE}
+\newcommand{\GitHubRepository}{compgeolab/paper-template}
 
 \newcommand{\Keywords}{%
   keyword1; keyword2; keyword3;
@@ -233,17 +226,17 @@
 \begin{summarybox}
   \noindent
   \textbf{Disclaimer:}
-  This is a non-peer reviewed preprint of an article submitted for publication
-  in \textit{\Journal{}}. It is available from EarthArXiv at
-  \url{https://doi.org/\PreprintDOI}.
+  %This is a non-peer reviewed preprint of an article submitted for publication
+  %in \textit{\Journal{}}. It is available from EarthArXiv at
+  %\url{https://doi.org/\PreprintDOI}.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   % Comment the above and uncomment below after publication in a journal
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  % This is a peer-reviewed author-produced postprint of the article
-  % ``\AuthorShort{} (\Year). \Title. \textit{\Journal}.
-  % doi:\href{https://doi.org/\JournalDOI}{\JournalDOI}''.
-  % The postprint is available from EarthArXiv at
-  % \url{https://doi.org/\PreprintDOI}.
+  This is a peer-reviewed author-produced postprint of the article
+  ``\AuthorShort{} (\Year). \Title. \textit{\Journal}.
+  doi:\href{https://doi.org/\JournalDOI}{\JournalDOI}''.
+  The postprint is available from EarthArXiv at
+  \url{https://doi.org/\PreprintDOI}.
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   \\[0.25cm]
   \noindent
@@ -252,6 +245,9 @@
   research can be freely accessed and reused under the terms of an open license.
   You can find it at \url{https://doi.org/\ArchiveDOI} and
   \url{https://github.com/\GitHubRepository}.
+  \\[0.25cm]
+  \noindent
+  \textbf{Keywords:} \Keywords{}
   \\[0.25cm]
   \noindent
   \textbf{\textcopyright{} \Year{} The Authors.}
@@ -269,7 +265,7 @@
   \setstretch{1.1} \small \input{abstract} \par
 \endgroup
 
-\input{content.tex}
+\input{paper/supplementary}
 
 \bibliographystyle{apalike-doi}
 \bibliography{references}
