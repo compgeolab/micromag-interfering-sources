@@ -257,7 +257,7 @@ These normalization procedures ensure that each parameter falls within a unit ra
 
     \begin{figure}[tb!]
       \centering
-      \includegraphics[width=1\linewidth]{paper/figures/re-detection-methodology.png}
+      \includegraphics[width=1\linewidth]{figures/re-detection-methodology.png}
       \caption{Source detection workflow on the residual anomaly. a) Synthetic sample featuring a wide range of magnetic moment intensities. b) The Blob detection algorithm identify the sources by using the total gradient obtained with the vertical component of the magnetic field. c) Result of the blob detection algorithm when applied to the total gradient of the residual anomaly.}
       \label{method-redetection}
     \end{figure}
@@ -287,7 +287,7 @@ The synthetic data inversion was performed using two approaches: the method prev
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/euler-comparion-synthetic.png}
+  \includegraphics[width=1\linewidth]{figures/euler-comparion-synthetic.png}
   \caption{
     Position estimation for the overlapping signals synthetic sample. (a) Initial detection window data for each magnetic source (black squares) and re-detection provided by the iterative solution (green squares). These data windows were used for the 3D position estimation of magnetic sources (colored circles) in the standard (b) and iterative (c) methodologies. Newly detected sources in the iterative method are represented as colored squares in panel (c).
   }
@@ -299,7 +299,7 @@ The positions used in the inversion differ between the two methods. In the stand
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/synthetic-data-stereograms-comparison.png}
+  \includegraphics[width=1\linewidth]{figures/synthetic-data-stereograms-comparison.png}
   \caption{
     Comparison of true and estimated dipole magnetic moments and directions for the overlapping signals in the synthetic sample. Panel (a) shows the true modeled direction, while panels (b) and (c) display the estimated vector directions obtained using the standard ($M = 112$) and iterative ($M = 166$) methods, respectively. Results for both methods were filtered based on the coefficient of determination ($R^2 \geq 0.9$), filtering sources with at least 90\% of their anomaly explained by a dipole \citep[\textit{e.g.,}][]{Souza-Junior2024, Fu2020}. Directions are hued by the magnitude of their magnetic moments. Open/closed circles indicate positive/negative inclinations.
   }
@@ -314,7 +314,7 @@ To evaluate the influence of particle density on the simulation results, we cons
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1.0\linewidth]{paper/figures/synthetic-different-densities-maps.png}
+  \includegraphics[width=1.0\linewidth]{figures/synthetic-different-densities-maps.png}
   \caption{
 Vertical component (\(b_z\)) magnetic data from synthetic grain distributions used to evaluate the influence of particle density on the simulation. Panel (a) shows an example with \(N = 500\), highlighting a low-density distribution of grains. Panel (b) illustrates the distribution for \(N = 1000\), presenting a moderate density of grains. Panel (c) displays the distribution for \(N = 2500\), showing a high-density grain arrangement.
   }
@@ -332,7 +332,7 @@ The results reveal a clear difference in the performance of the standard (red cu
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1.0\linewidth]{paper/figures/synthetic-different-densities-stereoplot.png}
+  \includegraphics[width=1.0\linewidth]{figures/synthetic-different-densities-stereoplot.png}
   \caption{
 Comparison of the magnetic directions obtained using the original (red line and left stereogram) and the iterative (blue line and right stereogram) methods on each synthetic grain distribution simulation. Panel (a) shows the angular misfit between the cumulative vector and the measured magnetic direction for the low-density distribution. Panel (b) illustrates the angular misfit for the high-density distribution. The stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for each density are also shown, with modeled bias direction (star) and the cumulative direction (square) indicated. The color gradient represents the logarithmic scale of particle counts, with warmer colors indicating higher particle concentrations.
   }
@@ -356,7 +356,7 @@ The samples we used provide test to:
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/real-data-maps.png}
+  \includegraphics[width=1\linewidth]{figures/real-data-maps.png}
   \caption{
    LED picture (left) and vertical component (\(b_z\), right) magnetic data from real samples observed at \(z = 5\) µm. Panel (a) shows an example from the ceramic tile sample, highlighting its key characteristics, including the presence of isolated dipolar particle signals and clusters related to larger particles. Panel (b) presents an example from the basaltic sample, displaying two main occurrences of magnetic signals: the first is a high density of signals distributed within the matrix, and the second appears as inclusions in plagioclase phenocrysts.
   }
@@ -383,7 +383,7 @@ Another contributing factor involves potential human-induced errors during the m
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/ceramic-data-stereoplot.png}
+  \includegraphics[width=1\linewidth]{figures/ceramic-data-stereoplot.png}
   \caption{
   Comparison of the standard (red) and iterative (blue) algorithms in reconstructing the NRM direction from the ceramic sample. (Left) Angular misfit between the cumulative vector and the measured NRM as a function of the number of particles ($N$). (Right) Stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for both methods, with the measured NRM (star) and the cumulative direction (square) indicated. The color gradient denotes the logarithmic scale of particle counts, with warmer colors representing higher concentrations.
   }
@@ -401,7 +401,7 @@ The results reveal a consistent difference between the standard and iterative me
 
 \begin{figure}[tb!]
   \centering
-  \includegraphics[width=1\linewidth]{paper/figures/basalt-data-stereoplot.png}
+  \includegraphics[width=1\linewidth]{figures/basalt-data-stereoplot.png}
   \caption{
   Comparison of the standard (red) and iterative (blue) algorithms in reconstructing the NRM direction from the basalt sample. (Left) Angular misfit between the cumulative vector and the measured NRM as a function of the number of particles ($N$). (Right) Stereographic projections of the filtered magnetic vectors ($R^2 \geq 0.9$) for both methods, with the measured NRM (star) and the cumulative direction (square) indicated. The color gradient denotes the logarithmic scale of particle counts, with warmer colors representing higher concentrations.
   }
