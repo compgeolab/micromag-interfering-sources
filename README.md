@@ -11,14 +11,11 @@ by
 This repository contains the data and source code used to produce the results
 presented in:
 
-> Souza-Junior, G. F., Uieda, L., Trindade, R. I. F., Fu, R. R., Bellon, U. D.,
-> and Castro, Y. M. (2025). Robust directional analysis of magnetic microscopy
-> images using non-linear inversion and iterative Euler deconvolution.
-> EarthArXiv. doi:[10.31223/X5N42F](https://doi.org/10.31223/X5N42F)
+> Souza‐Junior, G. F., Uieda, L., Trindade, R. I. F., Fu, R. R., Bellon, U. D., & Castro, Y. M. (2026). Robust Directional Analysis of Magnetic Microscopy Images Using Non‐Linear Inversion and Iterative Euler Deconvolution. Journal of Geophysical Research: Solid Earth, 131(4). doi:[10.1029/2025jb031725](https://doi.org/10.1029/2025jb031725).
 
 |  | Info |
 |-:|:-----|
-| Version of record | https://doi.org/JOURNAL_DOI |
+| Version of record | https://doi.org/10.1029/2025JB031725 |
 | Open-access preprint on EarthArXiv | https://doi.org/10.31223/X5N42F |
 | Archive of this repository | https://doi.org/10.5281/zenodo.15132658 |
 | Reproducing our results | [`REPRODUCING.md`](REPRODUCING.md) |
